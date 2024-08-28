@@ -7,23 +7,42 @@ app.use(bodyParser.json()); // Use the body-parser middleware to parse JSON requ
 const cors = require('cors'); // Import the cors middleware
 app.use(cors()); // Use the cors middleware to enable Cross-Origin Resource Sharing
 
-const { getAllUserTypes } = require("./queries/user_type.queries"); // Import the getAllUserTypes function
-const { getAllUsers } = require("./queries/user.queries");
+const { getAllUserTypes } = require("./queries/user_type.queries"); 
+const { getAllUsers, getUserByEmail } = require("./queries/user.queries");
+const { postPriceNumber, getPriceNumberById, patchPriceNumberById } = require("./queries/price_number.queries"); // Import the postPriceNumber, getPriceNumberById, and patchPriceNumberById functions
 
-// 1. GET ALL USER TYPES
+
+// 1. GET ALL USER TYPES FROM USER_TYPES TABLE
 app.get("/api/getUserTypes", (req, res) => { // Define a route to get all user types
     getAllUserTypes(req, res); // Call the getAllUserTypes function
 });
 
-//1. GET ALL USERS
+//1. GET ALL USERS FROM USERS TABLE
 app.get("/api/users",  (req, res) => {
     getAllUsers(req, res);
    
   });
-//2. GET USER BY EMAIL 
+//2. GET USER BY EMAIL FROM USERS TABLE
+app.get("/api/users/email/:email",  (req, res) => {
+   getUserByEmail(req, res);
+}); 
 
-// Obtener usuario por email
-app.get('/api/users/email/:email', async (req, res) => {
+// 1. POST A PRICE NUMBER FROM PRICE_NUMBERS TABLE
+app.post("/api/postPriceNumber", (req, res) => { 
+  postPriceNumber(req, res); 
+});
+
+// 2. GET A PRICE NUMBER BY ID FROM PRICE_NUMBERS TABLE
+app.get("/api/getPriceNumberById/:id", (req, res) => { 
+  getPriceNumberById(req, res);
+});
+
+// 3. PATCH A PRICE NUMBER BY ID FROM PRICE_NUMBERS TABLE
+app.patch("/api/patchPriceNumberById/:id", (req, res) => { 
+  patchPriceNumberById(req, res);
+});
+
+/*app.get('/api/users/email/:email', async (req, res) => {
     try {
       const user = await userQueries.getUserByEmail(req.params.email);
       if (user) {
@@ -34,7 +53,7 @@ app.get('/api/users/email/:email', async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener el usuario por email', error });
     }
-  });
+  });*/
 
 
 // Start the server

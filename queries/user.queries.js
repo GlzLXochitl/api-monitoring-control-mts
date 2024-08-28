@@ -1,5 +1,5 @@
-// get all
-// get by email
+// get all *
+// get by email 
 // post new
 // patch by id
 // put by id
@@ -32,9 +32,6 @@ const getUserByEmail = async (email) => {
       throw error;
     }
   };
-  
-  
-
 
 module.exports = {
   getAllUsers,

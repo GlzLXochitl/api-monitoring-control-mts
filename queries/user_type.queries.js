@@ -1,3 +1,5 @@
+// get all *
+
 const db = require("../config/database"); // Import the database models
 
 const UserType = db.user_type; // Alias for the userTypes model

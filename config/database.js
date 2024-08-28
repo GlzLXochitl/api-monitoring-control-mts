@@ -5,7 +5,7 @@ const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize(
   "mmc", 
   "root", 
-  "root", 
+  "", 
   {
   dialect: "mysql",
   host: "localhost", // Replace with your database host if different
