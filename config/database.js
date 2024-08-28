@@ -2,11 +2,15 @@
 const { Sequelize } = require('sequelize');
 
 // Replace the connection string with your database configuration
-const sequelize = new Sequelize("mmc", "", "", {
+const sequelize = new Sequelize(
+  "mmc", 
+  "root", 
+  "", 
+  {
   dialect: "mariadb",
   host: "localhost", // Replace with your database host if different
-  
-});
+  }
+);
 
 // Test the connection
 (async () => {
