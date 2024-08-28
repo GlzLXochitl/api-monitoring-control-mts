@@ -5,9 +5,9 @@ const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize(
   "mmc", 
   "root", 
-  "", 
+  "root", 
   {
-  dialect: "mariadb",
+  dialect: "mysql",
   host: "localhost", // Replace with your database host if different
   }
 );
