@@ -1,4 +1,6 @@
 const user_type = require("./user_type.model.js"); //foreign key
+const { DataTypes } = require('sequelize');
+
 
 module.exports = (sequelize, Sequelize) => {
   const Users = sequelize.define
