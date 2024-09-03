@@ -1,5 +1,6 @@
+//foreign keys
 const users = require("./users.model.js")
-const projects = require("./projects.model.js"); //foreign key
+const projects = require("./projects.model.js"); 
 
 module.exports = (sequelize, Sequelize) => {
   const UsersProjects = sequelize.define
@@ -63,6 +64,5 @@ module.exports = (sequelize, Sequelize) => {
     freezeTableName: true,
 
 });
-
   return UsersProjects;
 };

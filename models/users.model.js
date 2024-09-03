@@ -1,6 +1,5 @@
-const user_type = require("./user_type.model.js"); //foreign key
-const { DataTypes } = require('sequelize');
-
+//foreign key
+const user_type = require("./user_type.model.js"); 
 
 module.exports = (sequelize, Sequelize) => {
   const Users = sequelize.define
@@ -51,6 +50,5 @@ module.exports = (sequelize, Sequelize) => {
       freezeTableName: true,
     }
   );
-  
   return Users;
 };

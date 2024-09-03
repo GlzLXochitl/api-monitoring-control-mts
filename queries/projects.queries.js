@@ -1,17 +1,10 @@
-// get all *
-// get by id *
-// get actives *
-// get inactives *
-// get by date *
-// post new *
-// patch by id *
-// put by id * ??
-// delete by id *
-
+// import the database connection
 const db = require("../config/database");
+
+//import the table
 const Projects = db.projects;
 
-// 1. GET ALL PROJECTS 
+// 1. GET ALL PROJECTS
 const getAllProjects = async (req, res) => {
   try {
     const projects = await Projects.findAll();
@@ -38,10 +31,10 @@ const getProjectByID = async (req, res) => {
   }
 };
 
-// 3. GET ACTIVE PROJECTS 
+// 3. GET ACTIVE PROJECTS
 const getProjectsActives = async (req, res) => {
   try {
-    const project = await Projects.findOne({ where: { completed: true } });
+    const project = await Projects.findAll({ where: { completed: false } });
     if (project) {
       res.json(project);
     } else {
@@ -56,7 +49,7 @@ const getProjectsActives = async (req, res) => {
 // 4. GET INACTIVE PROJECTS
 const getProjectsInctives = async (req, res) => {
   try {
-    const project = await Projects.findOne({ where: { completed: false } });
+    const project = await Projects.findAll({ where: { completed: true } });
     if (project) {
       res.json(project);
     } else {
@@ -68,7 +61,7 @@ const getProjectsInctives = async (req, res) => {
   }
 };
 
-// 5. GET PROJECTS BY DELIVERY DATE 
+// 5. GET PROJECTS BY DELIVERY DATE
 const getProjectsByDeliveryDate = async (req, res) => {
   try {
     const projects = await Projects.findAll({
@@ -86,7 +79,7 @@ const getProjectsByDeliveryDate = async (req, res) => {
   }
 };
 
-// 6. POST NEW PROJECT 
+// 6. POST NEW PROJECT
 const postProject = async (req, res) => {
   try {
     const project = req.body;
@@ -98,7 +91,7 @@ const postProject = async (req, res) => {
   }
 };
 
-// 7. PATCH PROJECT BY ID 
+// 7. PATCH PROJECT BY ID
 const patchProjectByID = async (req, res) => {
   try {
     const projectId = req.params.id;
@@ -120,21 +113,38 @@ const patchProjectByID = async (req, res) => {
   }
 };
 
-// 8. PUT PROJECT BY ID     //NOTA: LOS DATOS NECESARIOS EN PUT NO COINCIDEN CON LA BD
+// 8. PUT PROJECT BY ID
 const putProjectByID = async (req, res) => {
   try {
-    const projectId = req.params.id;
-    const { project_name, description, delivery_date, completed } = req.body;
+    const projectId = req.params.id; //optain the id from the url
+    const {
+      identification_number,
+      delivery_date,
+      completed,
+      cost_material,
+      description,
+    } = req.body; //optain the data from the body
+
+    //update the data in the database
     const [updated] = await Projects.update(
-      { project_name, description, delivery_date, completed },
+      {
+        identification_number,
+        delivery_date,
+        completed,
+        cost_material,
+        description,
+      },
       { where: { id: projectId } }
     );
+
     if (updated) {
+      //if the data was updated, return the updated data
       const updatedProject = await Projects.findOne({
         where: { id: projectId },
       });
       res.json(updatedProject);
     } else {
+      //if the data was not updated, return an error message
       res.status(404).send("Proyecto no encontrado");
     }
   } catch (error) {
@@ -143,7 +153,7 @@ const putProjectByID = async (req, res) => {
   }
 };
 
-// 9. DELETE PROJECT BY ID 
+// 9. DELETE PROJECT BY ID
 const deleteProjectByID = async (req, res) => {
   try {
     const projectId = req.params.id;

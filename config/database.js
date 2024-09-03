@@ -26,8 +26,8 @@ const sequelize = new Sequelize(
 const db = {};
 
 // Add Sequelize instance to the database object
-db.sequelize = sequelize; //acceso a la libreria
-db.sequelize = Sequelize; //acceso a la instancia
+db.sequelize = sequelize; //access to the library
+db.sequelize = Sequelize; //acces to the instance
 
 //Models/tables
 db.user_type = require("../models/user_type.model.js")(sequelize, Sequelize); 
@@ -37,7 +37,6 @@ db.bom = require("../models/bom.model.js")(sequelize, Sequelize);
 db.users = require("../models/users.model.js")(sequelize, Sequelize); 
 db.users_projects = require("../models/users_projects.model.js")(sequelize, Sequelize); 
 db.projects = require("../models/projects.model.js")(sequelize, Sequelize); 
-db.price_number = require("../models/price_number.model.js")(sequelize, Sequelize); 
 //foreign keys
 db.users.belongsTo(db.user_type, { foreignKey: "user_type_id" });
 db.users_projects.belongsTo(db.users, { foreignKey: "users_id" });
@@ -45,7 +44,6 @@ db.users_projects.belongsTo(db.projects, { foreignKey: "project_id" });
 db.assembly.belongsTo(db.projects, { foreignKey: "project_id" });
 db.items.belongsTo(db.projects, { foreignKey: "project_id" });
 db.items.belongsTo(db.assembly, { foreignKey: "assembly_id" });
-db.items.belongsTo(db.price_number, { foreignKey: "part_number_id" });
 db.bom.belongsTo(db.projects, { foreignKey: "project_id" });
 db.bom.belongsTo(db.items, { foreignKey: "item_id" });
 

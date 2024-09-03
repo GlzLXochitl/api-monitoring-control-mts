@@ -1,8 +1,10 @@
-const projects = require("./projects.model.js"); //foreign key
+//foreign key
+const projects = require("./projects.model.js");
 
 module.exports = (sequelize, Sequelize) => {
-    const Assembly = sequelize.define
-    ('assembly', {
+  const Assembly = sequelize.define(
+    "assembly",
+    {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -12,10 +14,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: projects,
-            key: 'id',
+          model: projects,
+          key: "id",
         },
-      },  
+      },
       identification_number: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -36,6 +38,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
       },
+      currency: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -45,13 +51,13 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.NOW,
-      }
-    },     
-      {
-        timestamps: false,    
-        freezeTableName: true,
-        tableName: "assembly",
-      }
-    );
-    return Assembly;
-  }; 
+      },
+    },
+    {
+      timestamps: false,
+      freezeTableName: true,
+      tableName: "assembly",
+    }
+  );
+  return Assembly;
+};

@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS `MMC`.`assembly` (
   `delivery_date` DATE NULL,
   `completed_date` DATE NULL,
   `price` DECIMAL(10,2) NOT NULL,
+  `currency` VARCHAR(5) NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
@@ -97,44 +98,30 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `MMC`.`price_number`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `MMC`.`price_number` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `number_price_item` VARCHAR(25) NOT NULL,
-  `supplier` VARCHAR(45) NOT NULL,
-  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `MMC`.`items`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `MMC`.`items` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `project_id` INT UNSIGNED NOT NULL,
-  `price_number_id` INT UNSIGNED NOT NULL,
   `assembly_id` INT UNSIGNED NOT NULL,
   `name` VARCHAR(110) NOT NULL,
+  `description` VARCHAR(255) NULL,
   `quantity` INT NOT NULL,
   `stock_quantity` INT NULL,
-  `description` VARCHAR(255) NULL,
   `price` DECIMAL(15,2) NOT NULL,
+  `currency` VARCHAR(5) NOT NULL,
   `arrived_date` DATE NULL,
   `date_order` DATE NULL,
   `in_assembly` TINYINT(1) NULL,
-  `currency` VARCHAR(5) NOT NULL,
   `number_material` INT NOT NULL,
+  `number_price_item` VARCHAR(25) NULL,
+  `supplier` VARCHAR(55) NULL,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   INDEX `project_id_fk_idx` (`project_id` ASC) VISIBLE,
   INDEX `assembly_fk_idx` (`assembly_id` ASC) VISIBLE,
-  INDEX `item_id_number_price_fk_idx` (`price_number_id` ASC) VISIBLE,
   CONSTRAINT `project_id_items_fk`
     FOREIGN KEY (`project_id`)
     REFERENCES `MMC`.`projects` (`id`)
@@ -143,11 +130,6 @@ CREATE TABLE IF NOT EXISTS `MMC`.`items` (
   CONSTRAINT `assembly_items_fk`
     FOREIGN KEY (`assembly_id`)
     REFERENCES `MMC`.`assembly` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `item_id_number_price_fk`
-    FOREIGN KEY (`price_number_id`)
-    REFERENCES `MMC`.`price_number` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -207,4 +189,3 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-

@@ -1,6 +1,5 @@
-//foreign keys
+// forean kays 
 const projects = require("./projects.model.js"); 
-const price_number = require("./price_number.model.js"); 
 const assembly = require("./assembly.model.js"); 
 
 module.exports = (sequelize, Sequelize) => {
@@ -20,14 +19,6 @@ module.exports = (sequelize, Sequelize) => {
           key: "id",
         },
       },
-      price_number_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: price_number,
-          key: "id",
-        },
-      },
       assembly_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -40,6 +31,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      description: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -48,12 +43,12 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       price: {
         type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      currency: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
       arrived_date: {
@@ -68,12 +63,16 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.TINYINT(1),
         allowNull: false,
       },
-      currency: {
+      number_material: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      number_price_item: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      number_material: {
-        type: Sequelize.INTEGER,
+      supplier: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
       created_at: {
