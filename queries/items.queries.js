@@ -210,7 +210,7 @@ const getItemsByAssemblyProjectFK = async (req, res) => {
       include: [
         {
           model: Assembly,
-          attributes: ['id', 'description'], // Incluye atributos del ensamblaje si es necesario
+          attributes: ["id", "description"], // Incluye atributos del ensamblaje si es necesario
           where: { id: assemblyId },
         },
       ],
@@ -219,39 +219,38 @@ const getItemsByAssemblyProjectFK = async (req, res) => {
     if (items.length > 0) {
       res.status(200).json(items);
     } else {
-      res.status(404).json({ message: 'No items found' });
+      res.status(404).json({ message: "No items found" });
     }
   } catch (error) {
-    console.error("Error al obtener los materiales por ensamble y proyecto:", error);
+    console.error(
+      "Error al obtener los materiales por ensamble y proyecto:",
+      error
+    );
     res.status(500).send("Error del servidor");
   }
 };
 
 module.exports = { getItemsByAssemblyProjectFK };
 
-// 11. GET ITEMS WITH PRICE NUMBER 
-
+// 11. GET ITEMS WITH PRICE NUMBER
 const getItemsByNumberPrice = async (req, res) => {
   try {
-    const price_number_item = req.params.price_number; // Parámetro de la ruta
-    const item = await Items.findAll({ where: { number_price_item: price_number_item } }); // Consulta en la base de datos
+    const price_number_item = req.params.price_number; 
+    const item = await Items.findAll({
+      where: { number_price_item: price_number_item },
+    });
     if (item) {
-      res.json(item); // Respuesta en formato JSON si se encuentra el item
+      res.json(item); 
     } else {
-      res.status(404).send("Item no encontrado"); // Error 404 si no se encuentra
+      res.status(404).send("Item no encontrado");
     }
   } catch (error) {
-    console.error("Error al obtener el item:", error); // Error de servidor
+    console.error("Error al obtener el item:", error);
     res.status(500).send("Error del servidor");
   }
 };
 
-
- 
-
 module.exports = { getItemsByNumberPrice };
-
-
 
 module.exports = {
   getAllItems,
@@ -263,9 +262,8 @@ module.exports = {
   putItemByID,
   deleteItemByID,
   getItemsByProjectFK,
-  getItemsByAssemblyProjectFK,   
-  getItemsByNumberPrice,    //Quotation number  
-
+  getItemsByAssemblyProjectFK,
+  getItemsByNumberPrice, //Quotation number
 
   //getItemsByNumberPriceItem,  [PENDIENTE]
 };

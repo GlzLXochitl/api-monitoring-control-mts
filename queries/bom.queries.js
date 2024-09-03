@@ -1,16 +1,12 @@
-//get by id
-// get all if project is active
-// get all if project is inactive
-
+//import the database connection
 const db = require('../config/database');
 
 //names of the tables
-const Items = db.items;
-const Assembly = db.assembly;
+//const Items = db.items; // It is being imported directly into the querie.
  
 const getItemsByProject = async (projectId) => {
   try {
-    // Buscar los items asociados al proyecto específico
+    // serch for the items associated with the specific project
     const items = await db.items.findAll({
       where: {
         project_id: projectId,
@@ -18,19 +14,42 @@ const getItemsByProject = async (projectId) => {
       include: [
         {
           model: db.assembly,
-          attributes: ['id', 'description'], // Incluye atributos del ensamblaje si es necesario
+          attributes: ['id', 'description'], // include attributes of the assembly if necessary
         }
       ],
     });
     return items;
   } catch (error) {
-    console.error("Error al obtener los items del proyecto:", error);
+    console.error("Error in obtaining project items:", error);
+    throw error;
+  }
+};
+
+const getItemsByProjectWithZeroQuantity = async (projectId) => {
+  try {
+    // serch for the items associated with the specific project with quantity equal to zero
+    const items = await db.items.findAll({
+      where: {
+        project_id: projectId,
+        quantity: 0, // filter by quantity equal to zero
+      },
+      include: [
+        {
+          model: db.assembly,
+          attributes: ['id', 'description'], // include attributes of the assembly if necessary
+        }
+      ],
+    });
+    return items;
+  } catch (error) {
+    console.error("Error getting items that are not in stock:", error);
     throw error;
   }
 };
 
 module.exports = {
   getItemsByProject,
+  getItemsByProjectWithZeroQuantity
 };
 
 

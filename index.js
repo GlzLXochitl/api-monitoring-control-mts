@@ -45,7 +45,8 @@ const {
   getAssemblyByProjectFK,
 } = require("./queries/assembly.queries");
 const { 
-  getItemsByProject 
+  getItemsByProject,
+  getItemsByProjectWithZeroQuantity 
 } = require("./queries/bom.queries");
 const {
   getAllItems, 
@@ -220,6 +221,16 @@ app.get('/items/:projectId', async (req, res) => {
   try {
     const projectId = parseInt(req.params.projectId, 10);
     const items = await getItemsByProject(projectId);
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los items', error: error.message });
+  }
+});
+// 2 ONLY ITEMS THAT NOT TO BE IN STOCK
+app.get('/items/stock/:projectId', async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.projectId, 10);
+    const items = await getItemsByProjectWithZeroQuantity (projectId);
     res.json(items);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener los items', error: error.message });
