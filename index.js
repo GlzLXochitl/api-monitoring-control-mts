@@ -46,7 +46,7 @@ const {
 } = require("./queries/assembly.queries");
 const { 
   getItemsByProject,
-  getItemsByProjectWithZeroQuantity 
+  getItemsByAssemblyWithZeroQuantity
 } = require("./queries/bom.queries");
 const {
   getAllItems, 
@@ -227,16 +227,17 @@ app.get('/items/:projectId', async (req, res) => {
   }
 });
 // 2 ONLY ITEMS THAT NOT TO BE IN STOCK
-app.get('/items/stock/:projectId', async (req, res) => {
+app.get("/items/stock/assembly/:id", async (req, res) => {
   try {
-    const projectId = parseInt(req.params.projectId, 10);
-    const items = await getItemsByProjectWithZeroQuantity (projectId);
+    const assemblyId = req.params.id;
+    const items = await getItemsByAssemblyWithZeroQuantity(assemblyId);
     res.json(items);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los items', error: error.message });
-  }
-});
+    console.error("Items Sin Stock:", error);
+    res.status(500).json([]); // Devuelve un array vacío en caso de error
+}
 
+});
 
 ///////////////////////////////////////////////////////////////// ITEMS TABLE
 
