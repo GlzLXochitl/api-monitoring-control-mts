@@ -7,6 +7,7 @@ const db = require("../config/database");
 const Items = db.items;
 const Assembly = db.assembly;
 const Projects = db.projects;
+const Bom = db.bom;
 
 const { Op } = require("sequelize"); // sequelize operator for queries
 
@@ -176,17 +177,29 @@ const putItemByID = async (req, res) => {
 // 8. DELETE ITEM BY ID
 const deleteItemByID = async (req, res) => {
   try {
-    const itemId = req.params.id;
-    const deleted = await Items.destroy({ 
-      where: { id: itemId },
+    const itemId = req.params.id; 
+
+    // delete all rows from the bom table where item_id is equal to itemId
+    const deletedBom = await Bom.destroy({
+      where: {
+        item_id: itemId,
+      },
     });
-    if (deleted) {
+
+    // delete the item from the items table where id is equal to itemId
+    const deletedItems = await Items.destroy({
+      where: {
+        id: itemId,
+      },
+    });
+
+    if (deletedBom && deletedItems) {
       res.status(200).send("Action successfully completed");
     } else {
       res.status(404).send("Proyecto no encontrado");
     }
   } catch (error) {
-    console.error("Error al eliminar el material:", error);
+    console.error("Error al eliminar el proyecto:", error);
     res.status(500).send("Error del servidor");
   }
 };

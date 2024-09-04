@@ -4,6 +4,8 @@ const db = require("../config/database");
 // names of the tables
 const Assembly = db.assembly;
 const Projects = db.projects;
+const Items = db.items;
+const Bom = db.bom;
 
 const { Op } = require("sequelize"); // sequelize operator for queries
 
@@ -156,17 +158,47 @@ const putAssemblyByID = async (req, res) => {
 // 7. DELETE ASSEMBLY BY ID
 const deleteAssemblyByID = async (req, res) => {
   try {
-    const assemblyId = req.params.id;
-    const deleted = await Assembly.destroy({
-      where: { id: assemblyId },
+    const assemblyId = req.params.id; 
+
+    // optain all the item_id from the items table where assembly_id is equal to assemblyId
+    const items = await Items.findAll({
+      attributes: ['id'],
+      where: {
+        assembly_id: assemblyId,
+      },
     });
-    if (deleted) {
+
+    // extract the item_id from the items
+    const itemIds = items.map(item => item.id);
+
+    // delete all the rows from the bom table where item_id is equal to itemIds
+    const deletedBom = await Bom.destroy({
+      where: {
+        item_id: itemIds,
+      },
+    });
+
+    // delete all the rows from the items table where assembly_id is equal to assemblyId
+    const deletedItems = await Items.destroy({
+      where: {
+        assembly_id: assemblyId,
+      },
+    });
+
+    // delete the row from the assembly table where id is equal to assemblyId
+    const deletedAssembly = await Assembly.destroy({
+      where: {
+        id: assemblyId,
+      },
+    });
+
+    if (deletedBom && deletedItems && deletedAssembly) {
       res.status(200).send("Action successfully completed");
     } else {
-      res.status(404).send("Ensamble no encontrado");
+      res.status(404).send("Proyecto no encontrado");
     }
   } catch (error) {
-    console.error("Error al eliminar el ensamble:", error);
+    console.error("Error al eliminar el proyecto:", error);
     res.status(500).send("Error del servidor");
   }
 };

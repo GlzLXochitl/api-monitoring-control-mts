@@ -37,7 +37,7 @@ const {
   postProject,  
   patchProjectByID,  
   putProjectByID,  
-  deleteProjectByID,  // .... AL ELIMINAR UN PROYECTO SE DEBEN ELIMINAR TODOS LOS ELEMENTOS ASOCIADOS: ERROR, MARCA ERROR PERO ES POR NO ELIMINAR LOS ASOCIADOR POR FK
+  deleteProjectByID,  
 } = require("./queries/projects.queries");
 const {
   getAssemblyByProjectFK, 
@@ -47,7 +47,7 @@ const {
   postAssembly,  
   patchAssemblyByID,  
   putAssemblyByID, 
-  deleteAssemblyByID, // .... AL ELIMINAR UN PROYECTO SE DEBEN ELIMINAR TODOS LOS ELEMENTOS ASOCIADOS: ERROR, MARCA ERROR PERO ES POR NO ELIMINAR LOS ASOCIADOR POR FK
+  deleteAssemblyByID, 
   
 } = require("./queries/assembly.queries");
 const { 
