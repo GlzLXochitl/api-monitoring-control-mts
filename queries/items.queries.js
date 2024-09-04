@@ -42,7 +42,13 @@ const getItemsInStock = async (req, res) => {
 // 3. GET ITEMS BY ARRIVED DATE
 const getItemsByArrivedDate = async (req, res) => {
   try {
-    const items = await Items.findAll({
+    const items = await Items.findAll({ 
+      include: [
+        {
+          model: Projects,
+          where: { completed: false },
+        },
+      ],  
       order: [["arrived_date", "ASC"]],
     });
     res.json(items);
@@ -56,6 +62,12 @@ const getItemsByArrivedDate = async (req, res) => {
 const getItemsByDateOrder = async (req, res) => {
   try {
     const items = await Items.findAll({
+      include: [
+        {
+          model: Projects,
+          where: { completed: false },
+        },
+      ],
       order: [["date_order", "ASC"]],
     });
     res.json(items);
@@ -165,7 +177,9 @@ const putItemByID = async (req, res) => {
 const deleteItemByID = async (req, res) => {
   try {
     const itemId = req.params.id;
-    const deleted = await Items.destroy({ where: { id: itemId } });
+    const deleted = await Items.destroy({ 
+      where: { id: itemId },
+    });
     if (deleted) {
       res.status(200).send("Action successfully completed");
     } else {
@@ -235,12 +249,12 @@ module.exports = { getItemsByAssemblyProjectFK };
 // 11. GET ITEMS WITH PRICE NUMBER
 const getItemsByNumberPrice = async (req, res) => {
   try {
-    const price_number_item = req.params.price_number; 
-    const item = await Items.findAll({
-      where: { number_price_item: price_number_item },
+    const number_price = req.params.number_price; 
+    const items = await Items.findAll({
+      where: { number_price_item: number_price },
     });
-    if (item) {
-      res.json(item); 
+    if (items.length > 0) {
+      res.json(items); 
     } else {
       res.status(404).send("Item no encontrado");
     }
@@ -249,8 +263,6 @@ const getItemsByNumberPrice = async (req, res) => {
     res.status(500).send("Error del servidor");
   }
 };
-
-module.exports = { getItemsByNumberPrice };
 
 module.exports = {
   getAllItems,
@@ -264,6 +276,4 @@ module.exports = {
   getItemsByProjectFK,
   getItemsByAssemblyProjectFK,
   getItemsByNumberPrice, //Quotation number
-
-  //getItemsByNumberPriceItem,  [PENDIENTE]
 };

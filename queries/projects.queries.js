@@ -3,6 +3,10 @@ const db = require("../config/database");
 
 //import the table
 const Projects = db.projects;
+const UsersProjects = db.users_projects;
+const Assembly = db.assembly;
+const Items = db.items;
+const Bom = db.bom;
 
 // 1. GET ALL PROJECTS
 const getAllProjects = async (req, res) => {
@@ -15,7 +19,24 @@ const getAllProjects = async (req, res) => {
   }
 };
 
-// 2. GET PROJECT BY ID
+// 2. GET PROJECT BY IDENTIFICATION NUMBER
+const getProjectByIdentificationNumber = async (req, res) => {
+  try {
+    const identificationNumber = req.params.identification_number;
+    const project = await Projects.findOne({
+      where: { identification_number: identificationNumber },
+    });
+    if (project) {
+      res.json(project);
+    }
+  }
+  catch (error) {
+    console.error("Error al obtener el proyecto:", error);
+    res.status(500).send("Error del servidor");
+  }
+};
+
+// 3. GET PROJECT BY ID
 const getProjectByID = async (req, res) => {
   try {
     const projectId = req.params.id;
@@ -31,7 +52,7 @@ const getProjectByID = async (req, res) => {
   }
 };
 
-// 3. GET ACTIVE PROJECTS
+// 4. GET ACTIVE PROJECTS
 const getProjectsActives = async (req, res) => {
   try {
     const project = await Projects.findAll({ where: { completed: false } });
@@ -46,7 +67,7 @@ const getProjectsActives = async (req, res) => {
   }
 };
 
-// 4. GET INACTIVE PROJECTS
+// 5. GET INACTIVE PROJECTS
 const getProjectsInctives = async (req, res) => {
   try {
     const project = await Projects.findAll({ where: { completed: true } });
@@ -61,7 +82,7 @@ const getProjectsInctives = async (req, res) => {
   }
 };
 
-// 5. GET PROJECTS BY DELIVERY DATE
+// 6. GET PROJECTS BY DELIVERY DATE
 const getProjectsByDeliveryDate = async (req, res) => {
   try {
     const projects = await Projects.findAll({
@@ -79,7 +100,7 @@ const getProjectsByDeliveryDate = async (req, res) => {
   }
 };
 
-// 6. POST NEW PROJECT
+// 7. POST NEW PROJECT
 const postProject = async (req, res) => {
   try {
     const project = req.body;
@@ -91,7 +112,7 @@ const postProject = async (req, res) => {
   }
 };
 
-// 7. PATCH PROJECT BY ID
+// 8. PATCH PROJECT BY ID
 const patchProjectByID = async (req, res) => {
   try {
     const projectId = req.params.id;
@@ -113,7 +134,7 @@ const patchProjectByID = async (req, res) => {
   }
 };
 
-// 8. PUT PROJECT BY ID
+// 9. PUT PROJECT BY ID
 const putProjectByID = async (req, res) => {
   try {
     const projectId = req.params.id; //optain the id from the url
@@ -153,12 +174,36 @@ const putProjectByID = async (req, res) => {
   }
 };
 
-// 9. DELETE PROJECT BY ID
+// 10. DELETE PROJECT BY ID
 const deleteProjectByID = async (req, res) => {
   try {
-    const projectId = req.params.id;
-    const deleted = await Projects.destroy({ where: { id: projectId } });
-    if (deleted) {
+    const projectId = req.params.id; //optain the id from the url
+    const deletedUsersProjects = await UsersProjects.destroy({
+      where: {
+        project_id: projectId,
+      },
+    });
+    const deletedBom = await Bom.destroy({
+      where: {
+        project_id: projectId,
+      },
+    });
+    const deletedItems = await Items.destroy({
+      where: {
+        project_id: projectId,
+      },
+    });
+    const deletedAssembly = await Assembly.destroy({
+      where: {
+        project_id: projectId,
+      },
+    });
+    const deleted = await Projects.destroy({
+      where: {
+        id: projectId,
+      },
+    });
+    if (deletedUsersProjects, deletedBom, deletedItems, deletedAssembly, deleted) {
       res.status(200).send("Action successfully completed");
     } else {
       res.status(404).send("Proyecto no encontrado");
@@ -169,8 +214,27 @@ const deleteProjectByID = async (req, res) => {
   }
 };
 
+
+/*const deleteProjectByID = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const deleted = await Projects.destroy({ 
+      where: { id: projectId }
+    });
+    if (deleted) {
+      res.status(200).send("Action successfully completed");
+    } else {
+      res.status(404).send("Proyecto no encontrado");
+    }
+  } catch (error) {
+    console.error("Error al eliminar el proyecto:", error);
+    res.status(500).send("Error del servidor");
+  }
+};*/
+
 module.exports = {
   getAllProjects,
+  getProjectByIdentificationNumber,
   getProjectByID,
   getProjectsActives,
   getProjectsInctives,

@@ -110,7 +110,9 @@ const getUsersByUserType = async (req, res) => {
 
     // Busca los usuarios con el user_type_id especificado
     const users = await db.users.findAll({
-      where: { user_type_id: userTypeId },
+      where: { 
+        user_type_id: userTypeId 
+      },
     });
 
     // Retorna los usuarios encontrados o un mensaje si no se encuentran
