@@ -27,6 +27,19 @@ const getUserByEmail = async (email) => {
   }
 };
 
+// GET USERS BY USERNUMBER //
+const getUserByUserNumber = async (user_number) => {
+  try {
+    const user = await Users.findOne({ where: { user_number} });
+    return user;
+  } catch (error) {
+    console.error("Error al obtener el usuario por user_number:", error);
+    throw error
+  }
+};
+
+
+
 // POST NEW USER FROM USERS //
 const postUser = async (req, res) => {
   try {
@@ -99,37 +112,18 @@ const deleteUserById = async (req, res) => {
   }
 };
 
+
 // GET USERS BY USERTYPE FROM USERS
-const getUsersByUserType = async (req, res) => {
+const getUsersByUserType = async (user_type_id) => {
   try {
-    const userTypeId = parseInt(req.params.user_type_id, 10); // Convierte el parámetro a número entero
-
-    if (isNaN(userTypeId)) {
-      return res.status(400).send("ID de tipo de usuario inválido"); // Verifica que el ID sea un número válido
-    }
-
-    // Busca los usuarios con el user_type_id especificado
-    const users = await db.users.findAll({
-      where: { 
-        user_type_id: userTypeId 
-      },
-    });
-
-    // Retorna los usuarios encontrados o un mensaje si no se encuentran
-    if (users.length > 0) {
-      return res.status(200).json(users);
-    } else {
-      return res
-        .status(404)
-        .send(
-          "No se encontraron usuarios con el tipo de usuario proporcionado"
-        );
-    }
+    const users = await Users.findAll({ where: { user_type_id } });
+    return users;
   } catch (error) {
-    console.error("Error al obtener los usuarios por tipo de usuario:", error);
-    return res.status(500).send("Error del servidor");
+    console.error("Error al obtener el usuario por user_type:", error);
+    throw error;
   }
 };
+
 
 module.exports = {
   getAllUsers,
@@ -139,4 +133,6 @@ module.exports = {
   deleteUserById,
   postUser,
   getUsersByUserType,
+  getUserByUserNumber,
+  
 };

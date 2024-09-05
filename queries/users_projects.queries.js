@@ -81,9 +81,57 @@ const removeAllProjectsForUser = async (userId) => {
     throw error;
   }
 };
+// GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
+const getUsersByProject = async (project_id) => {
+  try {
+    const usersProjects = await db.users_projects.findAll({
+      where: { project_id }, // Filtrar por el project_id específico
+      attributes: ["users_id", "project_id"], // Seleccionar solo los atributos necesarios
+      raw: true, // Devuelve los resultados como objetos literales
+    });
+
+    return usersProjects;
+  } catch (error) {
+    console.error("Error al obtener los usuarios asociados al proyecto:", error);
+    throw error;
+  }
+};
+// GET USERS BY PROJECT AND WHO ARE ADMINS
+const getAdminsByProject = async (project_id) => {
+  try {
+    const adminsProjects = await db.users_projects.findAll({
+      where: { project_id }, // Filtrar por project_id específico
+      include: [
+        {
+          model: db.users, // Relacionar con la tabla de usuarios
+          where: { user_type_id: 1 }, // Filtrar solo administradores (ajusta según el valor correcto de user_type_id)
+          include: [
+            {
+              model: db.user_type, // Relacionar con la tabla de tipos de usuario
+              attributes: ["type"], // Seleccionar el tipo de usuario
+            }
+          ],
+          attributes: ["id", "user_number", "email"], // Seleccionar solo los atributos necesarios de los usuarios
+        },
+      ],
+      attributes: ["project_id"], // Seleccionar solo los atributos necesarios de users_projects
+      raw: true, // Devolver los resultados como objetos literales
+    });
+
+    return adminsProjects;
+  } catch (error) {
+    console.error("Error al obtener los administradores asociados al proyecto:", error);
+    throw error;
+  }
+};
+
+
+
 
 module.exports = {
   getUsersProjects,
   removeSpecificProjectForUser,
   removeAllProjectsForUser,
+  getUsersByProject,
+  getAdminsByProject
 };

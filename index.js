@@ -13,7 +13,9 @@ app.use(cors()); //use the cors middleware to enable cross-origin resource shari
 const {
   removeSpecificProjectForUser,
   removeAllProjectsForUser,
-  getUsersProjects
+  getUsersProjects,
+  getUsersByProject,
+  getAdminsByProject
 } = require("./queries/users_projects.queries");
 const { 
   getAllUserTypes,
@@ -21,11 +23,13 @@ const {
 const {
   getAllUsers,
   getUserByEmail,
+  getUserByUserNumber,
   postUser,
   patchUserById,
   putUserById,
   deleteUserById,
-  getUsersByUserType,
+  getUsersByUserType
+  
 } = require("./queries/user.queries.js");
 const {
   getAllProjects, 
@@ -48,14 +52,13 @@ const {
   patchAssemblyByID,  
   putAssemblyByID, 
   deleteAssemblyByID, 
-  
 } = require("./queries/assembly.queries");
 const { 
   getItemsByProject,
   getItemsByAssemblyWithZeroQuantity
 } = require("./queries/bom.queries");
 const {
-  getAllItems,  
+  getAllItems,  // only for testing
   getItemsInStock,  
   getItemsByArrivedDate,  
   getItemsByDateOrder,  
@@ -104,6 +107,23 @@ app.get("/api/users/:email", async (req, res) => {
     res.status(500).send("Error en el servidor");
   }
 });
+// GET USER FROM USERNUMBER //
+app.get("/api/users/usernum/:user", async (req, res) => {
+  try {
+    const user_number= req.params.user;
+    const user = await getUserByUserNumber(user_number);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).send("Usuario no encontrado");
+    }
+  } catch (error) {
+    console.error("Error al obtener el usuario por usernumber:", error);
+    res.status(500).send("Error en el servidor");
+  }
+});
+
+
 
 // PATCH USER BY ID FROM USERS //
 app.patch("/api/users/:id", (req, res) => {
@@ -125,10 +145,31 @@ app.delete("/api/users/:id", (req, res) => {
   deleteUserById(req, res);
 });
 
-//GET USERS BY USERTYPE FROM USERS
-app.get("/api/users/type/:user_type_id", (req, res) => {
-  getUsersByUserType(req, res);
+// GET USERS BY USERTYPE FROM USERS
+app.get("/api/getUsersByUserType/:id", async (req, res) => {
+  try {
+    const user_type_id = parseInt(req.params.id, 10); // Convierte el parámetro a número entero
+
+    if (isNaN(user_type_id)) {
+      return res.status(400).send("ID inválido");
+    }
+
+    // Llama a la función para obtener usuarios por tipo de usuario
+    const users = await getUsersByUserType(user_type_id);
+
+    if (users.length > 0) {
+      res.status(200).json(users);
+    } else {
+      res.status(404).send("No se encontraron usuarios con el tipo de usuario proporcionado");
+    }
+  } catch (error) {
+    console.error("Error al obtener los usuarios por tipo de usuario:", error);
+    res.status(500).send("Error del servidor");
+  }
 });
+
+
+
 ////////////////////////////////////////////////////////////////// USER_PROYECTS TABLE
 
 /// GET USERS WITH PROYECTS ASOCIATED
@@ -164,8 +205,38 @@ app.delete('/usuarios/:userId/proyectos', async (req, res) => {
     res.status(500).json({ mensaje: 'Error al eliminar todas las asociaciones de proyectos para el usuario', error: error.message });
   }
 });
+// USERS FROM ASOCIATED PROYECT IN SPECIFIC
+app.get("/api/projects/:project_id/users", async (req, res) => {
+  try {
+    const project_id = req.params.project_id; // Obtener el project_id de la URL
+    const users = await getUsersByProject(project_id);
+    
+    if (users.length > 0) {
+      res.json(users);
+    } else {
+      res.status(404).send("No se encontraron usuarios para este proyecto");
+    }
+  } catch (error) {
+    console.error("Error al obtener los usuarios del proyecto:", error);
+    res.status(500).send("Error en el servidor");
+  }
+});
+// GET USERS BY PROJECT AND WHO ARE ADMINS
+app.get("/api/projects/:project_id/admins", async (req, res) => {
+  try {
+    const project_id = req.params.project_id; // Obtener el project_id de la URL
+    const admins = await getAdminsByProject(project_id);
 
-
+    if (admins.length > 0) {
+      res.json(admins);
+    } else {
+      res.status(404).send("No se encontraron administradores para este proyecto");
+    }
+  } catch (error) {
+    console.error("Error al obtener los administradores del proyecto:", error);
+    res.status(500).send("Error en el servidor");
+  }
+});
 
 
 ///////////////////////////////////////////////////////////////// PROJECTS TABLE
