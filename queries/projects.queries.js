@@ -22,9 +22,11 @@ const getAllProjects = async (req, res) => {
 // 2. GET PROJECT BY IDENTIFICATION NUMBER
 const getProjectByIdentificationNumber = async (req, res) => {
   try {
-    const identificationNumber = req.params.identification_number;
+    const identificationNumber = req.params.number_id;
     const project = await Projects.findOne({
-      where: { identification_number: identificationNumber },
+      where: { 
+        identification_number: identificationNumber 
+      },
     });
     if (project) {
       res.json(project);
@@ -39,16 +41,37 @@ const getProjectByIdentificationNumber = async (req, res) => {
 // 3. GET PROJECT BY ID
 const getProjectByID = async (req, res) => {
   try {
-    const projectId = req.params.id;
-    const project = await Projects.findOne({ where: { id: projectId } });
+    const projectId = parseInt(req.params.id, 10);
+
+    // Validar que el ID del proyecto sea un número válido
+    if (isNaN(projectId)) {
+      return res.status(400).send("ID de proyecto inválido");
+    }
+
+    // Indicar que la solicitud está en proceso
+    console.log("Solicitud en proceso...");
+
+    const project = await Projects.findOne({ 
+      where: { 
+        id: projectId 
+      } 
+    });
+
     if (project) {
       res.json(project);
     } else {
       res.status(404).send("Proyecto no encontrado");
     }
+    
   } catch (error) {
     console.error("Error al obtener el proyecto:", error);
-    res.status(500).send("Error del servidor");
+
+    // Verificar si el error es de tipo Sequelize
+    if (error.name === 'SequelizeDatabaseError') {
+      res.status(500).send("Error en la base de datos");
+    } else {
+      res.status(500).send("Error del servidor");
+    }
   }
 };
 

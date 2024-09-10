@@ -5,10 +5,14 @@ const db = require("../config/database");
 const Users = db.users;
 //const UserTypes = db.userTypes;
 
-// GET ALL USERS FROM USERS //
+// GET ALL USERS FROM USERS 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await Users.findAll();
+    const users = await Users.findAll({   // if logic exists
+      where: {
+        deleted_at: null
+      }
+    });
     return res.json(users);
   } catch (error) {
     console.error("Error al obtener los usuarios:", error);
@@ -16,10 +20,15 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// GET USERS BY EMAIL FROM USERS //
+// GET USERS BY EMAIL FROM USERS 
 const getUserByEmail = async (email) => {
   try {
-    const user = await Users.findOne({ where: { email } });
+    const user = await Users.findOne({   // if logic exists
+      where: {
+        email,
+        deleted_at: null
+      }
+    });
     return user;
   } catch (error) {
     console.error("Error al obtener el usuario por email:", error);
@@ -27,18 +36,21 @@ const getUserByEmail = async (email) => {
   }
 };
 
-// GET USERS BY USERNUMBER //
+// GET USERS BY USERNUMBER 
 const getUserByUserNumber = async (user_number) => {
   try {
-    const user = await Users.findOne({ where: { user_number} });
-    return user;
+    const userNum = await Users.findOne({   // if logic exists
+      where: { 
+        user_number,
+        deleted_at: null 
+      } 
+    });
+    return userNum;
   } catch (error) {
     console.error("Error al obtener el usuario por user_number:", error);
-    throw error
+    throw error;
   }
 };
-
-
 
 // POST NEW USER FROM USERS //
 const postUser = async (req, res) => {
@@ -65,6 +77,7 @@ async function patchUserById(req, res) {
 
     await user.update(updatedData);
     res.json(user);
+
   } catch (error) {
     console.error("Error al actualizar usuario:", error);
     res.status(500).send("Error en el servidor");
@@ -94,12 +107,19 @@ const putUserById = async (req, res) => {
 };
 
 // DELETE USER BY ID FROM USERS
-const deleteUserById = async (req, res) => {
+const deleteUserByIdPatch = async (req, res) => {
   try {
     const userId = req.params.id; // Obtén el ID del usuario desde los parámetros de la URL
 
     // Elimina el usuario de la base de datos
-    const deleted = await db.users.destroy({ where: { id: userId } });
+    //const deleted = await db.users.destroy({ where: { id: userId } });
+
+    // Elimina logicamente el usuario de la base de datos
+    //UPDATE users SET deleted_at = NOW() WHERE id = 1;
+    const [deleted] = await db.users.update(
+      { deleted_at: db.sequelize.fn("NOW") },
+      { where: { id: userId } }
+    );
 
     if (deleted) {
       res.status(200).send(`Usuario con ID ${userId} eliminado exitosamente`);
@@ -111,12 +131,15 @@ const deleteUserById = async (req, res) => {
     res.status(500).send("Error del servidor");
   }
 };
-
-
 // GET USERS BY USERTYPE FROM USERS
 const getUsersByUserType = async (user_type_id) => {
   try {
-    const users = await Users.findAll({ where: { user_type_id } });
+    const users = await Users.findAll({ 
+      where: { 
+        user_type_id,
+        deleted_at: null 
+      } 
+    });
     return users;
   } catch (error) {
     console.error("Error al obtener el usuario por user_type:", error);
@@ -124,15 +147,13 @@ const getUsersByUserType = async (user_type_id) => {
   }
 };
 
-
 module.exports = {
   getAllUsers,
   getUserByEmail,
   patchUserById,
   putUserById,
-  deleteUserById,
+  deleteUserByIdPatch,
   postUser,
   getUsersByUserType,
   getUserByUserNumber,
-  
 };

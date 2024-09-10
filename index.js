@@ -1,6 +1,8 @@
 const express = require("express"); // importt the express library
 const app = express(); // create an instance of express
 //const router = express.Router(); // create a new router object
+// Importa el objeto db desde la configuración de la base de datos
+const db = require('./config/database');
 
 const bodyParser = require("body-parser"); // import the body-parser library
 app.use(bodyParser.json()); // use the body-parser middleware
@@ -10,65 +12,65 @@ app.use(cors()); //use the cors middleware to enable cross-origin resource shari
 
 // const db = require('./config/database'); // import the database connection
 //const PriceNumber = require('./models/price_number.model'); // Import the PriceNumber model
+
 const {
   removeSpecificProjectForUser,
   removeAllProjectsForUser,
   getUsersProjects,
   getUsersByProject,
-  getAdminsByProject
-} = require("./queries/users_projects.queries");
-const { 
-  getAllUserTypes,
-} = require("./queries/user_type.queries");
+  getAdminsByProject,
+  assignUserToProject,
+  //postUserInProject   //only test, not necessary 
+  } = require("./queries/users_projects.queries");
+const { getAllUserTypes } = require("./queries/user_type.queries");
 const {
-  getAllUsers,
-  getUserByEmail,
-  getUserByUserNumber,
-  postUser,
+  getAllUsers, 
+  getUserByEmail, 
+  getUserByUserNumber, 
+  postUser, 
   patchUserById,
   putUserById,
-  deleteUserById,
-  getUsersByUserType
-  
+  deleteUserByIdPatch,  // logic delete
+  getUsersByUserType, //
 } = require("./queries/user.queries.js");
 const {
-  getAllProjects, 
-  getProjectByIdentificationNumber, 
-  getProjectByID,  
-  getProjectsActives, 
-  getProjectsInctives, 
-  getProjectsByDeliveryDate, 
-  postProject,  
-  patchProjectByID,  
-  putProjectByID,  
-  deleteProjectByID,  
+  getAllProjects,
+  getProjectByIdentificationNumber,
+  getProjectByID,
+  getProjectsActives,
+  getProjectsInctives,
+  getProjectsByDeliveryDate,
+  postProject,
+  patchProjectByID,
+  putProjectByID,
+  deleteProjectByID,
 } = require("./queries/projects.queries");
 const {
-  getAssemblyByProjectFK, 
-  getAssamblyByID,  
-  getAssemblyByDeliveryDate,  
-  getAssemblyByCompletedDate,  
-  postAssembly,  
-  patchAssemblyByID,  
-  putAssemblyByID, 
-  deleteAssemblyByID, 
+  getAssemblyByProjectFK,
+  getAssamblyByID,
+  getAssemblyByDeliveryDate,
+  getAssemblyByCompletedDate,
+  postAssembly,
+  patchAssemblyByID,
+  putAssemblyByID,
+  deleteAssemblyByID,
 } = require("./queries/assembly.queries");
-const { 
+const {
   getItemsByProject,
-  getItemsByAssemblyWithZeroQuantity
+  getItemsByAssemblyWithZeroQuantity,
 } = require("./queries/bom.queries");
 const {
-  getAllItems,  // only for testing
-  getItemsInStock,  
-  getItemsByArrivedDate,  
-  getItemsByDateOrder,  
-  postItem, 
-  patchItemByID,  
-  putItemByID,  
-  deleteItemByID,   // .... AL ELIMINAR UN PROYECTO SE DEBEN ELIMINAR TODOS LOS ELEMENTOS ASOCIADOS: ERROR, MARCA ERROR PERO ES POR NO ELIMINAR LOS ASOCIADOR POR FK
-  getItemsByProjectFK,  
-  getItemsByAssemblyProjectFK,    
-  getItemsByNumberPrice,     //Quotation number                         
+  getAllItems, // only for testing
+  getItemsInStock,
+  getItemsByArrivedDate,
+  getItemsByDateOrder,
+  postItem,
+  patchItemByID,
+  putItemByID,
+  deleteItemByID,
+  getItemsByProjectFK,
+  getItemsByAssemblyProjectFK,
+  getItemsByNumberPrice, //Quotation number
 } = require("./queries/items.queries");
 
 ///////////////////////////////////////////////////////////////// TEST ENDPOINT
@@ -88,7 +90,7 @@ app.get("/api/getUserTypes", (req, res) => {
 ///////////////////////////////////////////////////////////////// USERS TABLE
 
 // GET ALL USERS FROM USERS //
-app.get("/api/getusers", (req, res) => {
+app.get("/api/getUsers", (req, res) => {
   getAllUsers(req, res);
 });
 
@@ -107,13 +109,14 @@ app.get("/api/users/:email", async (req, res) => {
     res.status(500).send("Error en el servidor");
   }
 });
-// GET USER FROM USERNUMBER //
-app.get("/api/users/usernum/:user", async (req, res) => {
+
+// GET USER FROM USERNUMBER 
+app.get("/api/users/userNum/:userNum", async (req, res) => {
   try {
-    const user_number= req.params.user;
-    const user = await getUserByUserNumber(user_number);
-    if (user) {
-      res.json(user);
+    const user_number = req.params.userNum;
+    const userNum = await getUserByUserNumber(user_number);
+    if (userNum) {
+      res.json(userNum);
     } else {
       res.status(404).send("Usuario no encontrado");
     }
@@ -122,8 +125,6 @@ app.get("/api/users/usernum/:user", async (req, res) => {
     res.status(500).send("Error en el servidor");
   }
 });
-
-
 
 // PATCH USER BY ID FROM USERS //
 app.patch("/api/users/:id", (req, res) => {
@@ -141,16 +142,16 @@ app.put("/api/users/:id", (req, res) => {
 });
 
 //DELETE USER BY ID FROM USERS
-app.delete("/api/users/:id", (req, res) => {
-  deleteUserById(req, res);
+app.patch("/api/users/logicDelete/:id", (req, res) => { 
+  deleteUserByIdPatch(req, res);
 });
 
 // GET USERS BY USERTYPE FROM USERS
-app.get("/api/getUsersByUserType/:id", async (req, res) => {
+app.get("/getUsersByUserType/:id", async (req, res) => {
   try {
     const user_type_id = parseInt(req.params.id, 10); // Convierte el parámetro a número entero
 
-    if (isNaN(user_type_id)) {
+    if (isNaN(user_type_id) || user_type_id <= 0) {
       return res.status(400).send("ID inválido");
     }
 
@@ -168,19 +169,7 @@ app.get("/api/getUsersByUserType/:id", async (req, res) => {
   }
 });
 
-
-
 ////////////////////////////////////////////////////////////////// USER_PROYECTS TABLE
-
-/// GET USERS WITH PROYECTS ASOCIATED
-app.get('/users-projects', async (req, res) => {
-  try {
-    const usersProjects = await getUsersProjects();
-    res.json(usersProjects);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los usuarios y proyectos' });
-  }
-});
 
 // DELETE PROJECTS FOR A SPECIFIC USER 
 app.delete('/usuarios/:userId/proyectos/:projectId', async (req, res) => {
@@ -194,23 +183,60 @@ app.delete('/usuarios/:userId/proyectos/:projectId', async (req, res) => {
   }
 });
 
-// DELETE ALL PROJECTS FOR USER
+/// GET USERS WITH PROYECTS ASOCIATED
+app.get("/api/users-projects", async (req, res) => {
+  try {
+    const usersProjects = await getUsersProjects();
+    res.json(usersProjects);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los usuarios y proyectos" });
+  }
+});
 
-app.delete('/usuarios/:userId/proyectos', async (req, res) => {
+// Middleware para manejar errores asíncronos
+const asyncHandler = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+// Ruta para asignar un proyecto a un usuario
+app.post('/assign-project', async (req, res) => {
+  const { userId, projectId, additionalData } = req.body;
+
+  try {
+    // Llama a la función para asignar el proyecto al usuario
+    const result = await assignUserToProject(userId, projectId, additionalData);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error al asignar el proyecto al usuario:', error);
+    res.status(500).json({ message: 'Error al asignar el proyecto al usuario' });
+  }
+});
+
+// DELETE ALL PROJECTS FOR USER
+app.delete("/api/usuarios/:userId/proyectos", async (req, res) => {
   try {
     const userId = parseInt(req.params.userId, 10);
     const resultado = await removeAllProjectsForUser(userId);
-    res.json({ mensaje: `Se eliminaron ${resultado} asociaciones de proyectos para el usuario con ID ${userId}` });
+    res.json({
+      mensaje: `Se eliminaron ${resultado} asociaciones de proyectos para el usuario con ID ${userId}`,
+    });
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al eliminar todas las asociaciones de proyectos para el usuario', error: error.message });
+    res.status(500).json({
+      mensaje:
+        "Error al eliminar todas las asociaciones de proyectos para el usuario",
+      error: error.message,
+    });
   }
 });
+
 // USERS FROM ASOCIATED PROYECT IN SPECIFIC
 app.get("/api/projects/:project_id/users", async (req, res) => {
   try {
     const project_id = req.params.project_id; // Obtener el project_id de la URL
     const users = await getUsersByProject(project_id);
-    
+
     if (users.length > 0) {
       res.json(users);
     } else {
@@ -221,6 +247,7 @@ app.get("/api/projects/:project_id/users", async (req, res) => {
     res.status(500).send("Error en el servidor");
   }
 });
+
 // GET USERS BY PROJECT AND WHO ARE ADMINS
 app.get("/api/projects/:project_id/admins", async (req, res) => {
   try {
@@ -230,7 +257,9 @@ app.get("/api/projects/:project_id/admins", async (req, res) => {
     if (admins.length > 0) {
       res.json(admins);
     } else {
-      res.status(404).send("No se encontraron administradores para este proyecto");
+      res
+        .status(404)
+        .send("No se encontraron administradores para este proyecto");
     }
   } catch (error) {
     console.error("Error al obtener los administradores del proyecto:", error);
@@ -238,21 +267,25 @@ app.get("/api/projects/:project_id/admins", async (req, res) => {
   }
 });
 
+// POST, CREATE A NEW USER IN A PROJECT -> ONLY FOR TESTING
+/*app.post("/api/user_project", async (req, res) => {
+  postUserInProject(req, res);
+});*/
 
 ///////////////////////////////////////////////////////////////// PROJECTS TABLE
 
-// 1. GET ALL PROJECTS FROM PROJECTS TABLE -> ONLY FOR TESTING 
+// 1. GET ALL PROJECTS FROM PROJECTS TABLE -> ONLY FOR TESTING
 app.get("/api/getProjects", (req, res) => {
   getAllProjects(req, res);
 });
 
 // 2. GET PROJECT BY IDENTIFICATION NUMBER FROM PROJECTS TABLE
-app.get("/api/getProjects/:identification_number", (req, res) => {
+app.get("/api/getProjects/identification_number/:number_id", (req, res) => {
   getProjectByIdentificationNumber(req, res);
 });
 
 // 3. GET PROJECT BY ID FROM PROJECTS TABLE
-app.get("/api/getProjects/:id", (req, res) => {
+app.get("/api/getProjects/id/:id", (req, res) => {
   getProjectByID(req, res);
 });
 
@@ -336,17 +369,20 @@ app.get("/api/assembly/project/:id", (req, res) => {
 ///////////////////////////////////////////////////////////////// BOM TABLE
 
 // 1. GET BOM BY ID FROM BOM TABLE
-app.get('/items/:projectId', async (req, res) => {
+app.get("/api/items/:projectId", async (req, res) => {
   try {
     const projectId = parseInt(req.params.projectId, 10);
     const items = await getItemsByProject(projectId);
     res.json(items);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los items', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error al obtener los items", error: error.message });
   }
 });
+
 // 2 ONLY ITEMS THAT NOT TO BE IN STOCK
-app.get("/items/stock/assembly/:id", async (req, res) => {
+app.get("/api/items/stock/assembly/:id", async (req, res) => {
   try {
     const assemblyId = req.params.id;
     const items = await getItemsByAssemblyWithZeroQuantity(assemblyId);
@@ -354,8 +390,7 @@ app.get("/items/stock/assembly/:id", async (req, res) => {
   } catch (error) {
     console.error("Items Sin Stock:", error);
     res.status(500).json([]); // Devuelve un array vacío en caso de error
-}
-
+  }
 });
 
 ///////////////////////////////////////////////////////////////// ITEMS TABLE
@@ -410,8 +445,8 @@ app.get("/api/getItems/assembly/:project_id/:assembly_id", (req, res) => {
   getItemsByAssemblyProjectFK(req, res);
 });
 
-// 11. GET ITEMS WITH PRICE NUMBER 
-app.get('/api/items/price/:number_price', (req, res) => {
+// 11. GET ITEMS WITH PRICE NUMBER
+app.get("/api/items/price/:number_price", (req, res) => {
   getItemsByNumberPrice(req, res);
 });
 

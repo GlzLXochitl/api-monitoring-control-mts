@@ -1,13 +1,13 @@
-//import the database connection
+// import the database connection
 const db = require("../config/database");
 
-//names of the tables
-//const Items = db.items; // It is being imported directly into the querie.
+// names of the tables
+// const Items = db.items; // It is being imported directly into the querie.
 
 // tables names
-const Items = db.items;
-const Assembly = db.assembly;
-const Project = db.project;
+// const Items = db.items;
+// const Assembly = db.assembly;
+// const Project = db.project;
 
 const getItemsByProject = async (projectId) => {
   try {
@@ -30,13 +30,15 @@ const getItemsByProject = async (projectId) => {
   }
 };
 
+
+
 const getItemsByAssemblyWithZeroQuantity = async (assemblyId) => {
   try {
     // Buscar los ítems asociados con el assembly específico con cantidad igual a cero
     const items = await db.items.findAll({
       where: {
-        identification_number: assemblyId,
-        quantity: 0, // filtrar por cantidad igual a cero
+        assembly_id: assemblyId,
+        stock_quantity: 0, // filtrar por cantidad igual a cero
       },
     });
     return items;

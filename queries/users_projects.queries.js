@@ -2,10 +2,10 @@
 const db = require("../config/database");
 
 // names of the tables
-const Users = db.users;
-const UsersProjects = db.users_projects;
+// const Users = db.users;
+// const UsersProjects = db.users_projects;
 
-// GET USERS WITH PROJECTS ASOCIATED
+// 1. GET USERS WITH PROJECTS ASOCIATED
 const getUsersProjects = async () => {
   try {
     const usersProjects = await db.users_projects.findAll({
@@ -18,8 +18,8 @@ const getUsersProjects = async () => {
     throw error;
   }
 };
-// DELETE ASOCIATED PROJECTS
 
+// 2. DELETE ASOCIATED PROJECTS SPECIFIC
 const removeSpecificProjectForUser = async (userId, projectId) => {
   try {
     // Verifica si el usuario existe
@@ -52,7 +52,8 @@ const removeSpecificProjectForUser = async (userId, projectId) => {
     throw error;
   }
 };
-// REMOVE ALL PROJECTS FOR USER
+
+// 3. REMOVE ALL PROJECTS FOR USER
 const removeAllProjectsForUser = async (userId) => {
   try {
     // Verifica si el usuario existe
@@ -81,7 +82,8 @@ const removeAllProjectsForUser = async (userId) => {
     throw error;
   }
 };
-// GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
+
+// 4. GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
 const getUsersByProject = async (project_id) => {
   try {
     const usersProjects = await db.users_projects.findAll({
@@ -96,7 +98,8 @@ const getUsersByProject = async (project_id) => {
     throw error;
   }
 };
-// GET USERS BY PROJECT AND WHO ARE ADMINS
+
+// 5. GET USERS BY PROJECT AND WHO ARE ADMINS
 const getAdminsByProject = async (project_id) => {
   try {
     const adminsProjects = await db.users_projects.findAll({
@@ -126,12 +129,62 @@ const getAdminsByProject = async (project_id) => {
 };
 
 
+// 6. POST, CREATE A NEW USER IN A PROJECT
 
+/**
+ * Asigna un proyecto a un usuario.
+ * @param {number} userId - El ID del usuario.
+ * @param {number} projectId - El ID del proyecto.
+ * @param {object} additionalData - Datos adicionales para la asignación, opcional.
+ * @returns {Promise<object>} - La entrada creada o actualizada en users_projects.
+ */
+
+const assignUserToProject = async (userId, projectId, additionalData = {}) => {
+  try {
+    // Verifica si la asignación ya existe
+    let userProject = await db.users_projects.findOne({
+      where: {
+        users_id: userId,
+        project_id: projectId
+      }
+    });
+
+    if (userProject) {
+      // Si la asignación ya existe, actualiza los datos si se proporcionan
+      userProject = await userProject.update(additionalData);
+    } else {
+      // Si no existe, crea una nueva asignación
+      userProject = await db.users_projects.create({
+        users_id: userId,
+        project_id: projectId,
+        ...additionalData
+      });
+    }
+
+    return userProject;
+  } catch (error) {
+    console.error("Error al asignar el proyecto al usuario:", error);
+    throw error;
+  }
+};
+
+// 6.1 (7). POST, CREATE A NEW USER IN A PROJECT op.2
+/*const postUserInProject = async (req, res) => {
+  try {
+    const userInProject = await UsersProjects.create(req.body);
+    return res.json(userInProject);
+  } catch (error) {
+    console.error("Error al realizar el registro:", error);
+    res.status(500).send("Error del servidor");
+  }
+};*/
 
 module.exports = {
   getUsersProjects,
   removeSpecificProjectForUser,
   removeAllProjectsForUser,
   getUsersByProject,
-  getAdminsByProject
+  getAdminsByProject,
+  assignUserToProject,
+  //postUserInProject   //only test 
 };
