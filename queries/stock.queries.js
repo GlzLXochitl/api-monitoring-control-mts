@@ -128,7 +128,28 @@ const deleteStockByID = async (req, res) => {
     console.error("Error when deleting stock:", error);
     res.status(500).send("Server error");
   }
+  
 };
+// GET STOCK BY NAME1
+const getStockByName = async (req, res) => {
+  try {
+    const stockName = req.params.name; // Get the name from the URL
+    const stockItem = await Stock.findOne({
+      where: { name: stockName }, // Search by the name field in the Stock model
+    });
+
+    if (stockItem) {
+      res.status(200).json(stockItem); // If the material is found, return it
+    } else {
+      res.status(404).json({ message: "Material not found" }); // If not found, respond with 404
+    }
+  } catch (error) {
+    console.error("Error fetching material by name:", error);
+    res.status(500).json({ message: "Server error" }); // In case of an error, respond with 500
+  }
+};
+
+
 
 module.exports = {
   getAllStockk,
@@ -137,4 +158,5 @@ module.exports = {
   patchStockByID,
   putStockByID,
   deleteStockByID,
+  getStockByName,
 };

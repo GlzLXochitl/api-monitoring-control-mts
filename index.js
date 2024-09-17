@@ -76,6 +76,7 @@ const {
   patchStockByID,
   putStockByID,
   deleteStockByID,
+  getStockByName,
 } = require("./queries/stock.queries");
 
 ///////////////////////////////////////////////////////////////// TEST ENDPOINT
@@ -362,6 +363,11 @@ app.get("/api/items/bomByAssembly/:id", async (req, res) => {
 app.get("/projects/:projectId/assemblies/:assemblyId/items", (req, res) => {
   getItemsByAssemblyAndProject(req, res);
 });
+// GET BY USER NAME
+app.get("/api/users/name/:name", (req, res) => {
+  getStockByName(req, res);
+});
+
 
 ///////////////////////////////////////////////////////////////// ITEMS TABLE
 
@@ -446,8 +452,8 @@ app.delete("/api/deleteStock/:id", (req, res) => {
 
 /////////////////////////////////////////////////////////////////// START SERVER
 
-//.IP_ADDRESS
-const port = process.env.IP_ADDRESS; // use the port defined in the environment variables or 3000
+//.IP_ADDRESS 
+const port = process.env.PORT || 3000; // use the port defined in the environment variables or 3000
 app.listen(port, () => console.log(`Server listening on port ${port}`)); // start the server and listen on port
 
 module.exports = app; // Export the app for testing
