@@ -1,37 +1,35 @@
-//foreign key
-const user_type = require("./user_type.model.js"); 
-
 module.exports = (sequelize, Sequelize) => {
-  const Users = sequelize.define
-  ('users', {
+  const Stock = sequelize.define(
+    "stock",
+    {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      user_type_id: {
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      description: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: user_type,
-          key: "id",
-        },
       },
-      user_number: {
+      price: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      currency: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      email: {
+      supplier: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      deleted_at: {
-        type: Sequelize.DATE,
-        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,
@@ -45,11 +43,10 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
-      tableName: "users",
       timestamps: false,
       freezeTableName: true,
-      paranoid: true // enable logical deletion
+      tableName: "stock",
     }
   );
-  return Users;
+  return Stock;
 };

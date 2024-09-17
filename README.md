@@ -1,47 +1,47 @@
-# MMC - Sistema de Monitoreo y Control de Materiales
+# MMC - Materials Monitoring and Control System
 
-## Descripción del Repositorio
+## Repository Description
 
-Este repositorio contiene la API del Sistema de Monitoreo y Control de Materiales (MMC). La API está diseñada para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre los materiales y proyectos. Sirve como el núcleo de la gestión de datos dentro del sistema, proporcionando los endpoints necesarios para interactuar con la base de datos y mantener la integridad de la información.
+This repository contains the API of the Materials Monitoring and Control System (MMC). The API is designed to perform CRUD (Create, Read, Update, Delete) operations on materials and projects. It serves as the core of data management within the system, providing the necessary endpoints to interact with the database and maintain information integrity.
 
-## Descripción del Proyecto 
+## Project Description 
 
-El Sistema de Monitoreo y Control de Materiales (MMC) es un proyecto más amplio compuesto por esta API y otro componente, llamado "Proyecto2", que se encarga de la interfaz de usuario, la sincronización de datos, entre otras funciones. Juntos, estos dos repositorios conforman una aplicación completa que permite gestionar y monitorear materiales con seguimiento de proyectos, facilitando una administración eficiente de recursos a través de una interfaz de usuario y una infraestructura de backend.
+The Materials Monitoring and Control System (MMC) is a broader project composed of this API and another component, called “Project2”, which is responsible for the user interface, data synchronization, among other functions. Together, these two repositories form a complete application that allows managing and monitoring materials with project tracking, facilitating efficient resource management through a user interface and a backend infrastructure.
 
-[Repositorio de Proyecto2](https://example.com)
+[Repository of “Project2”: ](https://example.com)
 
-## Dependencias
+## Dependencies
 
-El proyecto utiliza las siguientes dependencias:
+The project uses the following dependencies:
 
-- `express`: Framework web para Node.js.
-- `body-parser`: Middleware para analizar cuerpos de solicitudes HTTP.
-- `cors`: Middleware para habilitar CORS (Cross-Origin Resource Sharing).
-- `mariadb`: Cliente para conectarse a bases de datos MariaDB.
-- `sequelize`: ORM (Object-Relational Mapping) para Node.js.
-- `nodemon`: Herramienta para reiniciar automáticamente la aplicación cuando se detectan cambios en los archivos.
+- `express`: Web framework for Node.js.
+- `body-parser`: Middleware to analyze HTTP request bodies.
+- `cors`: Middleware to enable CORS (Cross-Origin Resource Sharing).
+- `mariadb`: Client to connect to MariaDB databases.
+- `sequelize`: ORM (Object-Relational Mapping) for Node.js.
+- `nodemon`: Tool to automatically restart the application when file changes are detected.
 
-## Instalación
+## Installation
 
-Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno local:
+Follow these steps to set up and run the project in your local environment:
 
-1. Clona el repositorio:
+1. Clone the repository:
 
    ```sh
    git clone https://github.com/GlzLXochitl/api-monitoring-control-mts.git
    cd api-monitoring-control-mts
    ```
 
-2. Instala las dependencias del proyecto:
+2. Installs the project dependencies:
 
    ```sh
    npm install
    ```
 
-3. Configura la base de datos:
+3. Configure the database:
 
-   - Crea una base de datos en MariaDB.
-   - Actualiza el archivo `config/database.js` con las credenciales de tu base de datos.
+   - Create a database in MariaDB.
+   - Update the `config/database.js` file with your database credentials.
 
    ```javascript
 
@@ -57,27 +57,27 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno local:
 
    ```
 
-4. Ejecuta las semillas para configurar la base de datos:
+4. Execute the seeds to configure the database:
 
    ```sh
-   # Ejecutar todas las semillas
+   # Execute all seeds
    npx sequelize-cli db:seed:all
    ```
 
-   Si necesitas revertir las semillas, puedes hacerlo con el siguiente comando:
+   If you need to revert the seeds, you can do it with the following command:
 
    ```sh
    npx sequelize-cli db:seed:undo
    ```
 
-5. Inicia el servidor en modo desarrollo:
+5. Start the server in development mode:
 
    ```sh
    npm run dev
    ```
 
-   Esto iniciará el servidor utilizando `nodemon`, que reiniciará automáticamente la aplicación cuando se detecten cambios en los archivos.
+   This will start the server using `nodemon`, which will automatically restart the application when changes to the files are detected.
 
-## Uso
+## Use
 
-Una vez que el servidor esté en funcionamiento, puedes acceder a la aplicación en `http://localhost:3000` (o el puerto que hayas configurado).
+Once the server is up and running, you can access the application at `http://localhost:3000` (or whatever port you have configured).

@@ -1,65 +1,41 @@
-//post fk : conjunto de datos para la relacion con price_number, postiar respecto a campos de items [PENDIENTE]
-
 //import the database connection
 const db = require("../config/database");
-
 // names of the tables
 const Items = db.items;
 const Assembly = db.assembly;
 const Projects = db.projects;
 const Bom = db.bom;
-
 const { Op } = require("sequelize"); // sequelize operator for queries
 
-// 1. GET ALL ITEMS FOR TESTING PURPOSES
+// GET ALL ITEMS FOR TESTING PURPOSES
 const getAllItems = async (req, res) => {
   try {
     const items = await Items.findAll();
     res.json(items);
   } catch (error) {
-    console.error("Error al obtener los materiales:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 2. GET ITEMS IN STOCK only if stock_quantity > 0
-const getItemsInStock = async (req, res) => {
-  try {
-    //const items = await Items.findAll();
-    const items = await Items.findAll({
-      where: {
-        stock_quantity: {
-          [Op.gt]: 0, // Greater than 0
-        },
-      },
-    });
-    res.json(items);
-  } catch (error) {
-    console.error("Error al obtener los items en stock:", error);
-    res.status(500).send("Error del servidor");
-  }
-};
-
-// 3. GET ITEMS BY ARRIVED DATE
+// GET ITEMS BY ARRIVED DATE
 const getItemsByArrivedDate = async (req, res) => {
   try {
-    const items = await Items.findAll({ 
+    const items = await Items.findAll({
       include: [
         {
           model: Projects,
           where: { completed: false },
         },
-      ],  
+      ],
       order: [["arrived_date", "ASC"]],
     });
     res.json(items);
   } catch (error) {
-    console.error("Error al obtener los materiales:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 4. GET ITEMS BY DATE ORDER
+// GET ITEMS BY DATE ORDER
 const getItemsByDateOrder = async (req, res) => {
   try {
     const items = await Items.findAll({
@@ -73,51 +49,48 @@ const getItemsByDateOrder = async (req, res) => {
     });
     res.json(items);
   } catch (error) {
-    console.error("Error al obtener los materiales:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 5. POST NEW ITEM
+// POST NEW ITEM
 const postItem = async (req, res) => {
   try {
     const item = req.body;
     await Items.create(item);
     res.json(item);
   } catch (error) {
-    console.error("Error al añadir el material:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error when adding material:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 6. PATCH ITEM BY ID
+// PATCH ITEM BY ID patchItemByID
 const patchItemByID = async (req, res) => {
   try {
-    const itemId = req.params.id; // get the item id from request parameters
-    const updates = req.body; // get the update data from request body
-
-    // update the item in the database
+    const itemId = req.params.id; // Get the item ID from the request parameters
+    const updates = req.body; // Get the update data from the request body
+    // Update the item in the database
     const [updated] = await Items.update(updates, {
       where: { id: itemId },
     });
-
-    // check if the update was successful
+    // Check if the update was successful
     if (updated) {
-      // find the updated item in the database
+      // Find and return the updated item
       const updatedItem = await Items.findOne({
         where: { id: itemId },
       });
       res.json(updatedItem);
     } else {
-      res.status(404).send("Material no encontrado");
+      // If no rows were updated, return a 404 error
+      res.status(404).send("Item not found");
     }
   } catch (error) {
-    console.error("Error al actualizar el material:", error);
-    res.status(500).send("Error del servidor");
+    // Handle any errors during the update process
+    console.error("Error updating item:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 7. PUT ITEM BY ID
+// PUT ITEM BY ID
 const putItemByID = async (req, res) => {
   try {
     const itemId = req.params.id; //optain the id from the url
@@ -127,7 +100,6 @@ const putItemByID = async (req, res) => {
       name,
       description,
       quantity,
-      stock_quantity,
       price,
       currency,
       arrived_date,
@@ -137,7 +109,6 @@ const putItemByID = async (req, res) => {
       number_price_item,
       supplier,
     } = req.body; //optain the data from the body
-
     //update the data in the database
     const [updated] = await Items.update(
       {
@@ -146,7 +117,6 @@ const putItemByID = async (req, res) => {
         name,
         description,
         quantity,
-        stock_quantity,
         price,
         currency,
         arrived_date,
@@ -158,7 +128,6 @@ const putItemByID = async (req, res) => {
       },
       { where: { id: itemId } }
     );
-
     if (updated) {
       //if the data was updated, return the updated data
       const updatedItem = await Items.findOne({
@@ -166,45 +135,38 @@ const putItemByID = async (req, res) => {
       });
       res.json(updatedItem);
     } else {
-      res.status(404).send("Material no encontrado");
+      res.status(404).send("Material not found");
     }
   } catch (error) {
-    console.error("Error al modificar el material:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error when modifying the material:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 8. DELETE ITEM BY ID
+// DELETE ITEM BY ID
 const deleteItemByID = async (req, res) => {
   try {
-    const itemId = req.params.id; 
-
-    // delete all rows from the bom table where item_id is equal to itemId
-    const deletedBom = await Bom.destroy({
-      where: {
-        item_id: itemId,
-      },
-    });
-
-    // delete the item from the items table where id is equal to itemId
-    const deletedItems = await Items.destroy({
-      where: {
-        id: itemId,
-      },
-    });
-
-    if (deletedBom && deletedItems) {
+    const itemId = req.params.id;
+    // Check if itemId exists in Items table
+    const item = await Items.findOne({ where: { id: itemId } });
+    if (item) {
+      // Check if item_id in Bom table is equal to itemId
+      const bom = await Bom.findOne({ where: { item_id: itemId } });
+      if (bom) {
+        // Delete the corresponding record in the Bom table
+        await Bom.destroy({ where: { item_id: itemId } });
+      }
+      // Delete the corresponding record in the Items table
+      await Items.destroy({ where: { id: itemId } });
       res.status(200).send("Action successfully completed");
     } else {
-      res.status(404).send("Proyecto no encontrado");
+      res.status(404).send("Item not found");
     }
   } catch (error) {
-    console.error("Error al eliminar el proyecto:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error deleting Material:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 9. GET ITEMS BY PROJECT FK FROM ITEMS TABLE AND PROJECT TABLE JOIN
+// GET ITEMS BY PROJECT FK FROM ITEMS TABLE AND PROJECT TABLE JOIN
 const getItemsByProjectFK = async (req, res) => {
   try {
     const projectId = req.params.id;
@@ -219,12 +181,11 @@ const getItemsByProjectFK = async (req, res) => {
     });
     res.json(items);
   } catch (error) {
-    console.error("Error al obtener los materiales por proyecto:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining materials by project:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 10. GET ITEMS BY ASSEMBLY AND PROJECT FK FROM ITEMS TABLE, ASSEMBLY TABLE AND PROJECTS TABLE JOIN
+// GET ITEMS BY ASSEMBLY AND PROJECT FK FROM ITEMS TABLE, ASSEMBLY TABLE AND PROJECTS TABLE JOIN
 const getItemsByAssemblyProjectFK = async (req, res) => {
   try {
     const projectId = req.params.project_id;
@@ -237,12 +198,11 @@ const getItemsByAssemblyProjectFK = async (req, res) => {
       include: [
         {
           model: Assembly,
-          attributes: ["id", "description"], // Incluye atributos del ensamblaje si es necesario
+          attributes: ["id", "description"], // Include assembly attributes if needed
           where: { id: assemblyId },
         },
       ],
     });
-
     if (items.length > 0) {
       res.status(200).json(items);
     } else {
@@ -250,36 +210,64 @@ const getItemsByAssemblyProjectFK = async (req, res) => {
     }
   } catch (error) {
     console.error(
-      "Error al obtener los materiales por ensamble y proyecto:",
+      "Error in obtaining materials by assembly and project:",
       error
     );
-    res.status(500).send("Error del servidor");
+    res.status(500).send("Server error");
   }
 };
-
-module.exports = { getItemsByAssemblyProjectFK };
-
-// 11. GET ITEMS WITH PRICE NUMBER
+// GET ITEMS WITH PRICE NUMBER
 const getItemsByNumberPrice = async (req, res) => {
   try {
-    const number_price = req.params.number_price; 
+    const number_price = req.params.number_price;
     const items = await Items.findAll({
       where: { number_price_item: number_price },
     });
     if (items.length > 0) {
-      res.json(items); 
+      res.json(items);
     } else {
       res.status(404).send("Item no encontrado");
     }
   } catch (error) {
-    console.error("Error al obtener el item:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
+  }
+};
+// GET ITEMS IF ARRIVED
+const getItemsArrived = async (req, res) => {
+  try {
+    const items = await Items.findAll({
+      where: {
+        in_assembly: {
+          [Op.eq]: 1,
+        },
+      },
+    });
+    res.json(items);
+  } catch (error) {
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
+  }
+};
+// GET ITEMS IF NOT ARRIVED
+const getItemsMissing = async (req, res) => {
+  try {
+    const items = await Items.findAll({
+      where: {
+        in_assembly: {
+          [Op.eq]: 0,
+        },
+      },
+    });
+    res.json(items);
+  } catch (error) {
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
   }
 };
 
 module.exports = {
   getAllItems,
-  getItemsInStock,
   getItemsByArrivedDate,
   getItemsByDateOrder,
   postItem,
@@ -289,4 +277,6 @@ module.exports = {
   getItemsByProjectFK,
   getItemsByAssemblyProjectFK,
   getItemsByNumberPrice, //Quotation number
+  getItemsArrived,
+  getItemsMissing,
 };

@@ -1,3 +1,5 @@
+// Seed file for user_type table data insertion
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('user_type', [

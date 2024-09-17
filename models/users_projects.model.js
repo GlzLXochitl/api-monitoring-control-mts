@@ -6,10 +6,9 @@ module.exports = (sequelize, Sequelize) => {
   const UsersProjects = sequelize.define
   ('projects', {
     id: {
-      type: Sequelize.INTEGER.UNSIGNED,
+      type: Sequelize.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      allowNull: false,
     },
     users_id: {
       type: Sequelize.INTEGER,
@@ -41,7 +40,6 @@ module.exports = (sequelize, Sequelize) => {
     tableName: 'users_projects',
     timestamps: false,  
     freezeTableName: true,
-
 });
   return UsersProjects;
 };

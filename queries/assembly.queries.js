@@ -1,15 +1,13 @@
-
-const db = require("../config/database"); 
-
+// import the database connection
+const db = require("../config/database");
 // names of the tables
 const Assembly = db.assembly;
 const Projects = db.projects;
 const Items = db.items;
 const Bom = db.bom;
-
 const { Op } = require("sequelize"); // sequelize operator for queries
 
-// 1. GET ASSEMBLY BY ID
+// GET ASSEMBLY BY ID
 const getAssamblyByID = async (req, res) => {
   try {
     const assemblyId = req.params.id;
@@ -17,42 +15,39 @@ const getAssamblyByID = async (req, res) => {
     if (assembly) {
       res.json(assembly);
     } else {
-      res.status(404).send("Proyecto no encontrado");
+      res.status(404).send("Assembly not found");
     }
   } catch (error) {
-    console.error("Error al obtener el proyecto:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining the assembly:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 2. GET ASSEMBLY BY DELIVERY DATE
+// GET ASSEMBLY BY DELIVERY DATE
 const getAssemblyByDeliveryDate = async (req, res) => {
   try {
-    const assembly = await Assembly.findAll({
+    const assemblies = await Assembly.findAll({
       include: [
         {
           model: Projects,
-          where: { completed: false },
+          where: { completed: 0 },
         },
       ],
       order: [["delivery_date", "ASC"]],
     });
-    if (assembly.length > 0) {
-      res.json(assembly);
-    } else {
-      res.status(404).send("Ensambles no encontrados");
+
+    if (!assemblies.length) {
+      return res.status(404).json({ message: "Assembly not found" });
     }
+    res.json(assemblies);
   } catch (error) {
-    console.error("Error al obtener los ensambles por fecha:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining the assembly by date:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
-// 3. GET ASSEMBLY BY COMPLETED DATE
+// GET ASSEMBLY BY COMPLETED DATE
 const getAssemblyByCompletedDate = async (req, res) => {
   try {
     const currentDate = new Date(); // date of today
-
     const assembly = await Assembly.findAll({
       include: [
         {
@@ -70,48 +65,50 @@ const getAssemblyByCompletedDate = async (req, res) => {
     if (assembly.length > 0) {
       res.json(assembly);
     } else {
-      res.status(404).send("Ensambles no encontrados");
+      res.status(404).send("Assembly not found");
     }
   } catch (error) {
-    console.error("Error al obtener los ensambles por fecha:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error in obtaining the assembly by date:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 4. POST NEW ASSEMBLY
+// POST NEW ASSEMBLY
 const postAssembly = async (req, res) => {
   try {
     const assembly = req.body;
     await Assembly.create(assembly);
     res.json(assembly);
   } catch (error) {
-    console.error("Error al crear el ensamble:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error when creating the assembly:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 5. PATCH ASSEMBLY BY ID
+// PATCH ASSEMBLY BY ID
 const patchAssemblyByID = async (req, res) => {
   try {
-    const assemblyId = req.params.id;
-    const assembly = req.body;
+    const assemblyId = req.params.id; // Get the assembly ID from request parameters
+    const assembly = req.body; // Get the update data from the request body
+    // Update the assembly in the database
     const [updated] = await Assembly.update(assembly, {
       where: { id: assemblyId },
     });
+    // Check if the update was successful
     if (updated) {
+      // Find and return the updated assembly
       const updatedAssembly = await Assembly.findOne({
         where: { id: assemblyId },
       });
       return res.json(updatedAssembly);
     }
-    return res.status(404).json({ message: "Ensamble no encontrado" });
+    // If no rows were updated, return a 404 error
+    return res.status(404).json({ message: "Assembly not found" });
   } catch (error) {
-    console.error("Error al actualizar el ensamble:", error);
-    res.status(500).send("Error del servidor");
+    // Handle any errors during the update process
+    console.error("Error updating the assembly:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 6. PUT ASSEMBLY BY ID
+// PUT ASSEMBLY BY ID
 const putAssemblyByID = async (req, res) => {
   try {
     const assemblyId = req.params.id; //optain the id from the url
@@ -123,8 +120,8 @@ const putAssemblyByID = async (req, res) => {
       completed_date,
       price,
       currency,
+      completed_assembly,
     } = req.body; //optain the data from the body
-
     //update the data in the database
     const [updated] = await Assembly.update(
       {
@@ -135,6 +132,7 @@ const putAssemblyByID = async (req, res) => {
         completed_date,
         price,
         currency,
+        completed_assembly,
       },
       { where: { id: assemblyId } }
     );
@@ -147,83 +145,112 @@ const putAssemblyByID = async (req, res) => {
       res.json(updatedAssembly);
     } else {
       //if the data was not updated, return an error message
-      res.status(404).send("Ensamble no encontrado");
+      res.status(404).send("Assembly not found");
     }
   } catch (error) {
-    console.error("Error al reemplazar el ensamble:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Failure to replace assembly:", error);
+    res.status(500).send("Server error");
   }
 };
-
-// 7. DELETE ASSEMBLY BY ID
+// DELETE ASSEMBLY BY ID
 const deleteAssemblyByID = async (req, res) => {
   try {
-    const assemblyId = req.params.id; 
-
-    // optain all the item_id from the items table where assembly_id is equal to assemblyId
+    const assemblyId = req.params.id;
+    // Get all item_id from items table where assembly_id is equal to assemblyId
     const items = await Items.findAll({
-      attributes: ['id'],
+      attributes: ["id"],
       where: {
         assembly_id: assemblyId,
       },
     });
-
-    // extract the item_id from the items
-    const itemIds = items.map(item => item.id);
-
-    // delete all the rows from the bom table where item_id is equal to itemIds
+    // Extract item_id from items
+    const itemIds = items.map((item) => item.id);
+    // Delete all rows of table bom where item_id is equal to itemIds
     const deletedBom = await Bom.destroy({
       where: {
         item_id: itemIds,
       },
     });
-
-    // delete all the rows from the items table where assembly_id is equal to assemblyId
-    const deletedItems = await Items.destroy({
-      where: {
-        assembly_id: assemblyId,
-      },
-    });
-
-    // delete the row from the assembly table where id is equal to assemblyId
-    const deletedAssembly = await Assembly.destroy({
-      where: {
-        id: assemblyId,
-      },
-    });
-
-    if (deletedBom && deletedItems && deletedAssembly) {
-      res.status(200).send("Action successfully completed");
+    // If nothing is found in bom that matches the item_id, continue
+    if (deletedBom === 0 || deletedBom) {
+      // Delete all rows in the items table where assembly_id is equal to assemblyId
+      const deletedItems = await Items.destroy({
+        where: {
+          assembly_id: assemblyId,
+        },
+      });
+      // Delete the row of the assembly table where id is equal to assemblyId
+      const deletedAssembly = await Assembly.destroy({
+        where: {
+          id: assemblyId,
+        },
+      });
+      if (deletedAssembly) {
+        res.status(200).send("Successfully deleted assembly");
+        if (deletedItems && deletedAssembly) {
+          console.log("Action successfully completed");
+        }
+      } else {
+        res.status(404).send("Assembly not found");
+      }
     } else {
-      res.status(404).send("Proyecto no encontrado");
+      res
+        .status(404)
+        .send("No records were found in BOM for the specified items.");
     }
   } catch (error) {
-    console.error("Error al eliminar el proyecto:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error deleting the assembly:", error);
+    res.status(500).send("Server error");
   }
 };
-
-
-// 8. GET ASSEMBLY BY PROJECT FK
+// GET ASSEMBLY BY PROJECT FK
 const getAssemblyByProjectFK = async (req, res) => {
   try {
     const projectId = req.params.id;
-
-    // Query the database to find all assemblies associated with the given project ID
     const assembly = await Assembly.findAll({
-      where: { project_id: projectId },
+      where: {
+        project_id: projectId,
+      },
     });
-
-    // Check if any assemblies were found
     if (assembly.length > 0) {
-      // If assemblies are found, return them as a JSON response
       res.json(assembly);
     } else {
-      // If no assemblies are found, return a 404 status with a message
-      res.status(404).send("Assemblies not found");
+      res.status(404).send("Assamblie not found");
     }
   } catch (error) {
-    console.error("Error fetching assemblies by project:", error);
+    console.error("Error obtaining project assemblies:", error);
+    res.status(500).send("Server error");
+  }
+};
+// GET ASSEMBLY ARRIVED
+const getAssemblyArrived = async (req, res) => {
+  try {
+    const assembly = await Assembly.findAll({
+      where: {
+        completed_assembly: {
+          [Op.eq]: 1,
+        },
+      },
+    });
+    res.json(assembly);
+  } catch (error) {
+    console.error("Error in obtaining existing materials:", error);
+    res.status(500).send("Server error");
+  }
+};
+// GET ASSEMBLY MISSING
+const getAssemblyMissing = async (req, res) => {
+  try {
+    const assembly = await Assembly.findAll({
+      where: {
+        completed_assembly: {
+          [Op.eq]: 0,
+        },
+      },
+    });
+    res.json(assembly);
+  } catch (error) {
+    console.error("Error in obtaining existing materials:", error);
     res.status(500).send("Server error");
   }
 };
@@ -237,4 +264,6 @@ module.exports = {
   putAssemblyByID,
   deleteAssemblyByID,
   getAssemblyByProjectFK,
+  getAssemblyArrived,
+  getAssemblyMissing,
 };

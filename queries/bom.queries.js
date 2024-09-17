@@ -1,14 +1,10 @@
 // import the database connection
 const db = require("../config/database");
-
 // names of the tables
-// const Items = db.items; // It is being imported directly into the querie.
+const Assembly = db.assembly;
+const Items = db.items;
 
-// tables names
-// const Items = db.items;
-// const Assembly = db.assembly;
-// const Project = db.project;
-
+// GET ITEMS BY PROJECT
 const getItemsByProject = async (projectId) => {
   try {
     // serch for the items associated with the specific project
@@ -29,26 +25,58 @@ const getItemsByProject = async (projectId) => {
     throw error;
   }
 };
-
-
-
-const getItemsByAssemblyWithZeroQuantity = async (assemblyId) => {
+// GET BOM BY ASSEMBLY WITH ITEMS MISSING
+const getBomByAssemblyWithItemsMissing = async (assemblyId) => {
   try {
-    // Buscar los ítems asociados con el assembly específico con cantidad igual a cero
+    // Search for items associated with the specific assembly with quantity equal to zero
     const items = await db.items.findAll({
       where: {
         assembly_id: assemblyId,
-        stock_quantity: 0, // filtrar por cantidad igual a cero
+        in_assembly: 0,
       },
     });
     return items;
   } catch (error) {
-    console.error("Error al obtener ítems que no están en stock:", error);
+    console.error("Error getting items that are not in stock:", error);
     throw error;
+  }
+};
+// GET ITEMS BY PROYECT BY ASSEMBLY AND PROJECT ID
+const getItemsByAssemblyAndProject = async (req, res) => {
+  const { projectId, assemblyId } = req.params;
+  try {
+    // Verify that the IDs are valid
+    if (!projectId || !assemblyId) {
+      return res
+        .status(400)
+        .json({ message: "Missing projectId or assemblyId parameters." });
+    }
+    // Perform the query to obtain the items
+    const items = await Items.findAll({
+      include: [
+        {
+          model: Assembly,
+          where: { id: assemblyId, project_id: projectId },
+          attributes: [], // Exclude the assembly data, we only want the items.
+        },
+      ],
+    });
+    // Check if items were found
+    if (!items || items.length === 0) {
+      return res.status(404).json({
+        message: "No items were found for the specified assembly and project.",
+      });
+    }
+    // Return items
+    res.json(items);
+  } catch (error) {
+    console.error("Error when obtaining items:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
 module.exports = {
   getItemsByProject,
-  getItemsByAssemblyWithZeroQuantity,
+  getBomByAssemblyWithItemsMissing,
+  getItemsByAssemblyAndProject,
 };

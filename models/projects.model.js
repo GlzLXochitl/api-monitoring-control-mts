@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     delivery_date: {
       type: Sequelize.DATE,
-      allowNull: true,
+      allowNull: false,
     },
     completed: {
       type: Sequelize.TINYINT,
@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     description: {
       type: Sequelize.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     created_at: {
       type: Sequelize.DATE,
@@ -40,7 +40,6 @@ module.exports = (sequelize, Sequelize) => {
     tableName: 'projects',
     timestamps: false,
     freezeTableName: true,
-    
   });
   return Projects;
 };

@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS `MMC`.`assembly` (
   `completed_date` DATE NULL,
   `price` DECIMAL(10,2) NOT NULL,
   `currency` VARCHAR(5) NOT NULL,
+  `completed_assembly` TINYINT NOT NULL DEFAULT 0,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
@@ -107,12 +108,11 @@ CREATE TABLE IF NOT EXISTS `MMC`.`items` (
   `name` VARCHAR(110) NOT NULL,
   `description` VARCHAR(255) NULL,
   `quantity` INT NOT NULL,
-  `stock_quantity` INT NULL,
   `price` DECIMAL(15,2) NOT NULL,
   `currency` VARCHAR(5) NOT NULL,
   `arrived_date` DATE NULL,
   `date_order` DATE NULL,
-  `in_assembly` TINYINT(1) NULL,
+  `in_assembly` TINYINT NULL,
   `number_material` INT NOT NULL,
   `number_price_item` VARCHAR(25) NULL,
   `supplier` VARCHAR(55) NULL,
@@ -141,12 +141,14 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `MMC`.`bom` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `project_id` INT UNSIGNED NOT NULL,
+  `assembly_id` INT UNSIGNED NOT NULL,
   `item_id` INT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
   INDEX `project_id_fk_idx` (`project_id` ASC) VISIBLE,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  INDEX `assembly_id_bom_fk_idx` (`assembly_id` ASC) VISIBLE,
   CONSTRAINT `item_id_bom_fk`
     FOREIGN KEY (`item_id`)
     REFERENCES `MMC`.`items` (`id`)
@@ -155,6 +157,11 @@ CREATE TABLE IF NOT EXISTS `MMC`.`bom` (
   CONSTRAINT `project_id_bom_fk`
     FOREIGN KEY (`project_id`)
     REFERENCES `MMC`.`projects` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `assembly_id_bom_fk`
+    FOREIGN KEY (`assembly_id`)
+    REFERENCES `MMC`.`assembly` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -183,6 +190,24 @@ CREATE TABLE IF NOT EXISTS `MMC`.`users_projects` (
     REFERENCES `MMC`.`projects` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `MMC`.`stock`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MMC`.`stock` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(110) NOT NULL,
+  `description` VARCHAR(255) NULL,
+  `quantity` INT NOT NULL,
+  `price` DECIMAL(15,2) NOT NULL,
+  `currency` VARCHAR(5) NOT NULL,
+  `supplier` VARCHAR(55) NULL,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 

@@ -1,183 +1,129 @@
 //import the database connection
 const db = require("../config/database");
 
-// names of the tables
-// const Users = db.users;
-// const UsersProjects = db.users_projects;
-
 // 1. GET USERS WITH PROJECTS ASOCIATED
 const getUsersProjects = async () => {
   try {
     const usersProjects = await db.users_projects.findAll({
-      attributes: ["users_id", "project_id"], // Solo selecciona los atributos necesarios
-      raw: true, // Devuelve los resultados como objetos literales en lugar de instancias de Sequelize
+      attributes: ["users_id", "project_id"],
+      raw: true, // Returns results as object literals instead of Sequelize instances
     });
     return usersProjects;
   } catch (error) {
-    console.error("Error al obtener los usuarios y proyectos:", error);
+    console.error("Error getting users and projects:", error);
     throw error;
   }
 };
-
 // 2. DELETE ASOCIATED PROJECTS SPECIFIC
 const removeSpecificProjectForUser = async (userId, projectId) => {
   try {
-    // Verifica si el usuario existe
+    // if exist is true
     const user = await db.users.findByPk(userId);
     if (!user) {
-      throw new Error("Usuario no encontrado");
+      throw new Error("User not found");
     }
-
-    // Verifica si el proyecto existe
+    // if exist is true
     const project = await db.projects.findByPk(projectId);
     if (!project) {
-      throw new Error("Proyecto no encontrado");
+      throw new Error("Project not found");
     }
-
-    // Realiza la eliminación de la asociación
+    // delete the association
     const resultado = await db.users_projects.destroy({
       where: {
         users_id: userId,
         project_id: projectId,
       },
     });
-
     if (resultado === 0) {
-      throw new Error("No se encontraron asociaciones para eliminar");
+      throw new Error("Not found asociations for delete");
     }
-
-    return resultado; // Número de filas eliminadas
+    return resultado;
   } catch (error) {
-    console.error("Error al eliminar el proyecto para el usuario:", error);
+    console.error("Error for delete", error);
     throw error;
   }
 };
-
 // 3. REMOVE ALL PROJECTS FOR USER
 const removeAllProjectsForUser = async (userId) => {
   try {
-    // Verifica si el usuario existe
+    // Check if the user exists
     const user = await db.users.findByPk(userId);
     if (!user) {
-      throw new Error("Usuario no encontrado");
+      throw new Error("Users not found");
     }
-
-    // Realiza la eliminación de todas las asociaciones para el usuario
+    // Performs the removal of all associations for the user
     const resultado = await db.users_projects.destroy({
       where: {
         users_id: userId,
       },
     });
-
     if (resultado === 0) {
-      throw new Error("No se encontraron asociaciones para eliminar");
+      throw new Error("No associations found to delete");
     }
-
-    return resultado; // Número de filas eliminadas
+    return resultado; // Number of rows deleted
+  } catch (error) {
+    console.error("Error deleting all project associations for user:", error);
+    throw error;
+  }
+};
+// 4. GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
+const getUsersByProject = async (project_id) => {
+  try {
+    const usersProjects = await db.users_projects.findAll({
+      where: { project_id },
+      attributes: ["users_id", "project_id"],
+      raw: true,
+    });
+    return usersProjects;
   } catch (error) {
     console.error(
-      "Error al eliminar todas las asociaciones de proyectos para el usuario:",
+      "Error when obtaining the users associated to the project:",
       error
     );
     throw error;
   }
 };
-
-// 4. GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
-const getUsersByProject = async (project_id) => {
-  try {
-    const usersProjects = await db.users_projects.findAll({
-      where: { project_id }, // Filtrar por el project_id específico
-      attributes: ["users_id", "project_id"], // Seleccionar solo los atributos necesarios
-      raw: true, // Devuelve los resultados como objetos literales
-    });
-
-    return usersProjects;
-  } catch (error) {
-    console.error("Error al obtener los usuarios asociados al proyecto:", error);
-    throw error;
-  }
-};
-
 // 5. GET USERS BY PROJECT AND WHO ARE ADMINS
 const getAdminsByProject = async (project_id) => {
   try {
     const adminsProjects = await db.users_projects.findAll({
-      where: { project_id }, // Filtrar por project_id específico
+      where: { project_id }, 
       include: [
         {
-          model: db.users, // Relacionar con la tabla de usuarios
-          where: { user_type_id: 1 }, // Filtrar solo administradores (ajusta según el valor correcto de user_type_id)
+          model: db.users, 
+          where: { user_type_id: 1 }, 
           include: [
             {
-              model: db.user_type, // Relacionar con la tabla de tipos de usuario
-              attributes: ["type"], // Seleccionar el tipo de usuario
-            }
+              model: db.user_type, 
+              attributes: ["type"], 
+            },
           ],
-          attributes: ["id", "user_number", "email"], // Seleccionar solo los atributos necesarios de los usuarios
+          attributes: ["id", "user_number", "email"], 
         },
       ],
-      attributes: ["project_id"], // Seleccionar solo los atributos necesarios de users_projects
-      raw: true, // Devolver los resultados como objetos literales
+      attributes: ["project_id"], 
+      raw: true, // Return results as object literals
     });
-
     return adminsProjects;
   } catch (error) {
-    console.error("Error al obtener los administradores asociados al proyecto:", error);
+    console.error(
+      "Error getting administrators associated with the project:",
+      error
+    );
     throw error;
   }
 };
-
-
-// 6. POST, CREATE A NEW USER IN A PROJECT
-
-/**
- * Asigna un proyecto a un usuario.
- * @param {number} userId - El ID del usuario.
- * @param {number} projectId - El ID del proyecto.
- * @param {object} additionalData - Datos adicionales para la asignación, opcional.
- * @returns {Promise<object>} - La entrada creada o actualizada en users_projects.
- */
-
-const assignUserToProject = async (userId, projectId, additionalData = {}) => {
+// 6. ASSIGN USER TO PROJECT
+const assignUserToProject = async (req, res) => {
   try {
-    // Verifica si la asignación ya existe
-    let userProject = await db.users_projects.findOne({
-      where: {
-        users_id: userId,
-        project_id: projectId
-      }
-    });
-
-    if (userProject) {
-      // Si la asignación ya existe, actualiza los datos si se proporcionan
-      userProject = await userProject.update(additionalData);
-    } else {
-      // Si no existe, crea una nueva asignación
-      userProject = await db.users_projects.create({
-        users_id: userId,
-        project_id: projectId,
-        ...additionalData
-      });
-    }
-
-    return userProject;
-  } catch (error) {
-    console.error("Error al asignar el proyecto al usuario:", error);
-    throw error;
-  }
-};
-
-// 6.1 (7). POST, CREATE A NEW USER IN A PROJECT op.2
-/*const postUserInProject = async (req, res) => {
-  try {
-    const userInProject = await UsersProjects.create(req.body);
+    const userProjectData = req.body;
+    const userInProject = await db.users_projects.create(userProjectData);
     return res.json(userInProject);
   } catch (error) {
-    console.error("Error al realizar el registro:", error);
-    res.status(500).send("Error del servidor");
+    console.error("Error:", error);
+    res.status(500).send("Server error");
   }
-};*/
+};
 
 module.exports = {
   getUsersProjects,
@@ -186,5 +132,4 @@ module.exports = {
   getUsersByProject,
   getAdminsByProject,
   assignUserToProject,
-  //postUserInProject   //only test 
 };

@@ -1,4 +1,4 @@
-// forean kays 
+// foreing keys
 const projects = require("./projects.model.js"); 
 const assembly = require("./assembly.model.js"); 
 
@@ -36,10 +36,6 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
       },
       quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      stock_quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
