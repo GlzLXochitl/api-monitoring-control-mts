@@ -2,7 +2,7 @@
 const { Sequelize } = require("sequelize");
 
 // Replace the connection string with your database configuration
-const sequelize = new Sequelize("mmc", "root", "", {
+const sequelize = new Sequelize("mmc", "root", "root", {
   dialect: "mysql",
   host: "localhost", // Replace with your database host if different
 });

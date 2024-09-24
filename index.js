@@ -7,6 +7,12 @@ app.use(bodyParser.json()); // use the body-parser middleware
 const cors = require("cors"); // import the cors library
 app.use(cors()); //use the cors middleware to enable cross-origin resource sharing
 
+// Middleware de autenticación
+const authenticate = (req, res, next) => {
+  // Aquí puedes implementar la lógica de autenticación si es necesario
+  // Por ejemplo, verificar un token JWT o una sesión
+  next(); // Llama a next() para continuar con la siguiente función de middleware
+};
 const { getAllUserTypes } = require("./queries/user_type.queries");
 const {
   removeSpecificProjectForUser,
@@ -205,13 +211,14 @@ app.get("/api/users/userNum/:userNum", async (req, res) => {
     if (userNum) {
       res.json(userNum);
     } else {
-      res.status(404).send("User not found");
+      res.status(404).json({ message: "User not found" }); // Cambiado a JSON
     }
   } catch (error) {
     console.error("Error getting user by usernumber:", error);
-    res.status(500).send("Server error");
+    res.status(500).json({ message: "Server error" }); // Cambiado a JSON
   }
 });
+
 // PATCH USER BY ID FROM USERS
 app.patch("/api/users/:id", (req, res) => {
   patchUserById(req, res);
