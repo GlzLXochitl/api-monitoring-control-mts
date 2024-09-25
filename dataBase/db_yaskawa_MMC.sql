@@ -5,8 +5,8 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema MMC
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `MMC` DEFAULT CHARACTER SET utf8 ;
-USE `MMC` ;
+CREATE SCHEMA IF NOT EXISTS `MMC` DEFAULT CHARACTER SET utf8;
+USE `MMC`;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`projects`
@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS `MMC`.`projects` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `identification_number_UNIQUE` (`identification_number` ASC) VISIBLE)
-ENGINE = InnoDB;
+  UNIQUE INDEX `identification_number_UNIQUE` (`identification_number` ASC) VISIBLE
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`user_type`
@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS `MMC`.`user_type` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-ENGINE = InnoDB;
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`users`
@@ -55,8 +55,8 @@ CREATE TABLE IF NOT EXISTS `MMC`.`users` (
     FOREIGN KEY (`user_type_id`)
     REFERENCES `MMC`.`user_type` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`assembly`
@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS `MMC`.`assembly` (
     FOREIGN KEY (`project_id`)
     REFERENCES `MMC`.`projects` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`items`
@@ -100,11 +100,13 @@ CREATE TABLE IF NOT EXISTS `MMC`.`items` (
   `number_material` INT NOT NULL,
   `number_price_item` VARCHAR(25) NULL,
   `supplier` VARCHAR(55) NULL,
+  `stock_id` INT UNSIGNED NULL,  -- Nueva columna para relacionar con stock
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
   INDEX `project_id_fk_idx` (`project_id` ASC) VISIBLE,
   INDEX `assembly_fk_idx` (`assembly_id` ASC) VISIBLE,
+  INDEX `stock_id_fk_idx` (`stock_id` ASC) VISIBLE,  -- Índice para stock_id
   CONSTRAINT `project_id_items_fk`
     FOREIGN KEY (`project_id`)
     REFERENCES `MMC`.`projects` (`id`)
@@ -114,8 +116,13 @@ CREATE TABLE IF NOT EXISTS `MMC`.`items` (
     FOREIGN KEY (`assembly_id`)
     REFERENCES `MMC`.`assembly` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION,
+  CONSTRAINT `stock_id_items_fk`
+    FOREIGN KEY (`stock_id`)
+    REFERENCES `MMC`.`stock` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`bom`
@@ -152,8 +159,8 @@ CREATE TABLE IF NOT EXISTS `MMC`.`bom` (
     FOREIGN KEY (`stock_id`)
     REFERENCES `MMC`.`stock` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`users_projects`
@@ -176,8 +183,8 @@ CREATE TABLE IF NOT EXISTS `MMC`.`users_projects` (
     FOREIGN KEY (`project_id`)
     REFERENCES `MMC`.`projects` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `MMC`.`stock`
@@ -193,8 +200,8 @@ CREATE TABLE IF NOT EXISTS `MMC`.`stock` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-ENGINE = InnoDB;
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE
+) ENGINE = InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

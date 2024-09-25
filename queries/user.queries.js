@@ -128,40 +128,7 @@ const getUsersByUserType = async (user_type_id) => {
     throw error;
   }
 };
-app.post('/forgot-password', async (req, res) => {
-  const { email } = req.body;
 
-  try {
-    // Busca el usuario por su correo electrónico
-    const user = await User.findOne({ where: { email } });
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Genera un token o enlace para restablecer la contraseña (esto es un ejemplo básico)
-    const resetToken = Math.random().toString(36).substring(2, 15); // Esto es solo un ejemplo, deberías usar un token más seguro
-
-    // Aquí puedes guardar el token en la base de datos asociado al usuario
-
-    // Prepara el correo electrónico
-    const mailOptions = {
-      from: 'your-email@gmail.com',
-      to: email,
-      subject: 'Password Reset',
-      text: `You requested a password reset. Click the link to reset your password: 
-      http://localhost:3000/reset-password?token=${resetToken}`, // Aquí deberías tener una ruta en tu frontend
-    };
-
-    // Envía el correo
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).json({ message: 'Recovery email sent' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error sending email' });
-  }
-});
 
 module.exports = {
   getAllUsers,
