@@ -6,9 +6,9 @@ This repository contains the API of the Materials Monitoring and Control System 
 
 ## Project Description 
 
-The Materials Monitoring and Control System (MMC) is a broader project composed of this API and another component, called “Project2”, which is responsible for the user interface, data synchronization, among other functions. Together, these two repositories form a complete application that allows managing and monitoring materials with project tracking, facilitating efficient resource management through a user interface and a backend infrastructure.
+The Materials Monitoring and Control System (MMC) is a broader project composed of this API and another component, called "react-monitoring-control-mts", which is responsible for the user interface, data synchronization, among other functions. Together, these two repositories form a complete application that allows managing and monitoring materials with project tracking, facilitating efficient resource management through a user interface and a backend infrastructure.
 
-[Repository of “Project2”: ](https://example.com)
+[Repository of “Project2”: ](https://github.com/GlzLXochitl/react-monitoring-control-mts.git)
 
 ## Dependencies
 
