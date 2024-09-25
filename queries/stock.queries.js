@@ -2,6 +2,7 @@
 const db = require("../config/database");
 // names of the tables
 const Stock = db.stock;
+const Item = db.items;
 
 // GET ALL ITEMS IN STOCK
 const getAllStockk = async (req, res) => {
@@ -88,12 +89,8 @@ const putStockByID = async (req, res) => {
     // update the data in the database
     const [updated] = await Stock.update(
       {
-        name,
-        description,
-        quantity,
-        price,
-        currency,
-        supplier,
+        item_id,
+        quantity
       },
       { where: { id: stockId } }
     );
@@ -133,19 +130,19 @@ const deleteStockByID = async (req, res) => {
 // GET STOCK BY NAME1
 const getStockByName = async (req, res) => {
   try {
-    const stockName = req.params.name; // Get the name from the URL
-    const stockItem = await Stock.findOne({
-      where: { name: stockName }, // Search by the name field in the Stock model
+    const itemName = req.params.name; // Obtener el nombre del parámetro de la URL
+    const items = await Item.findAll({
+      where: { name: itemName }, // Buscar en la tabla items por el campo name
     });
 
-    if (stockItem) {
-      res.status(200).json(stockItem); // If the material is found, return it
+    if (items.length > 0) {
+      res.status(200).json(items); // Si se encuentran ítems, devolverlos con un estado 200
     } else {
-      res.status(404).json({ message: "Material not found" }); // If not found, respond with 404
+      res.status(404).json({ message: "Material not found" }); // Si no se encuentran, devolver un mensaje de "Material not found" con un estado 404
     }
   } catch (error) {
-    console.error("Error fetching material by name:", error);
-    res.status(500).json({ message: "Server error" }); // In case of an error, respond with 500
+    console.error("Error fetching materials by name:", error);
+    res.status(500).json({ message: "Server error" }); // En caso de error, devolver un mensaje de "Server error" con un estado 500
   }
 };
 

@@ -1,3 +1,5 @@
+const items = require("./items.model.js"); //foreign keys
+
 module.exports = (sequelize, Sequelize) => {
   const Stock = sequelize.define(
     "stock",
@@ -7,28 +9,16 @@ module.exports = (sequelize, Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      name: {
-        type: Sequelize.STRING,
+      item_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-      },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        references: {
+          model: items,
+          key: "id",
+        },
       },
       quantity: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      price: {
-        type: Sequelize.DECIMAL(10, 2),
-        allowNull: false,
-      },
-      currency: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      supplier: {
-        type: Sequelize.STRING,
         allowNull: false,
       },
       created_at: {

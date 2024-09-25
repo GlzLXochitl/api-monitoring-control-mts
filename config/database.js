@@ -2,7 +2,7 @@
 const { Sequelize } = require("sequelize");
 
 // Replace the connection string with your database configuration
-const sequelize = new Sequelize("mmc", "root", "root", {
+const sequelize = new Sequelize("mmc", "root", "", {
   dialect: "mysql",
   host: "localhost", // Replace with your database host if different
 });
@@ -46,6 +46,8 @@ db.items.belongsTo(db.assembly, { foreignKey: "assembly_id" });
 db.bom.belongsTo(db.projects, { foreignKey: "project_id" });
 db.bom.belongsTo(db.assembly, { foreignKey: "assembly_id" });
 db.bom.belongsTo(db.items, { foreignKey: "item_id" });
+db.bom.belongsTo(db.stock, { foreignKey: "stock_id" });
+db.stock.belongsTo(db.items, { foreignKey: "item_id" });
 
 //export db
 module.exports = db;

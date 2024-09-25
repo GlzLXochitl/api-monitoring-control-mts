@@ -1,7 +1,8 @@
 //foreign keys
 const projects = require("./projects.model.js");
-const items = require("./items.model.js");
 const assembly = require("./assembly.model.js"); 
+const items = require("./items.model.js");
+const stock = require("./stock.model.js");
   
 module.exports = (sequelize, Sequelize) => {
   const Bom = sequelize.define(
@@ -33,6 +34,14 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         references: {
           model: items,
+          key: "id",
+        },
+      },
+      stock_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: stock,
           key: "id",
         },
       },
