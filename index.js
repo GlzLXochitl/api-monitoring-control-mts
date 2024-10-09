@@ -21,6 +21,8 @@ const {
   getUsersByProject,
   getAdminsByProject,
   assignUserToProject,
+  getUserWithProjectsById
+  
 } = require("./queries/users_projects.queries");
 const {
   getAllUsers,
@@ -145,6 +147,8 @@ app.get("/api/users-projects", async (req, res) => {
     res.status(500).json({ message: "Error getting users and projects" });
   }
 });
+
+
 // USERS FROM ASOCIATED PROYECT IN SPECIFIC
 app.get("/api/projects/:project_id/users", async (req, res) => {
   try {
@@ -218,7 +222,6 @@ app.get("/api/users/userNum/:userNum", async (req, res) => {
     res.status(500).json({ message: "Server error" }); // Cambiado a JSON
   }
 });
-
 // PATCH USER BY ID FROM USERS
 app.patch("/api/users/:id", (req, res) => {
   patchUserById(req, res);
@@ -254,6 +257,8 @@ app.get("/getUsersByUserType/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+
 
 ///////////////////////////////////////////////////////////////// PROJECTS TABLE
 
@@ -460,7 +465,7 @@ app.delete("/api/deleteStock/:id", (req, res) => {
 /////////////////////////////////////////////////////////////////// START SERVER
 
 //.IP_ADDRESS 
-const port = process.env.PORT || 3000; // use the port defined in the environment variables or 3000
+const port = process.env.PORT || 3001; // use the port defined in the environment variables or 3000
 app.listen(port, () => console.log(`Server listening on port ${port}`)); // start the server and listen on port
 
 module.exports = app; // Export the app for testing

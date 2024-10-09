@@ -103,8 +103,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `MMC`.`items` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `project_id` INT UNSIGNED NOT NULL,
-  `assembly_id` INT UNSIGNED NOT NULL,
+  `project_id` INT UNSIGNED NULL,
+  `assembly_id` INT UNSIGNED NULL,
   `name` VARCHAR(110) NOT NULL,
   `description` VARCHAR(255) NULL,
   `quantity` DECIMAL NOT NULL,

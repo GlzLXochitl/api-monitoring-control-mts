@@ -131,5 +131,5 @@ module.exports = {
   removeAllProjectsForUser,
   getUsersByProject,
   getAdminsByProject,
-  assignUserToProject,
+  assignUserToProject
 };
