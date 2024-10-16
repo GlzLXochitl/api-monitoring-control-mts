@@ -13,7 +13,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       project_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: projects,
           key: "id",
@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       assembly_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: assembly,
           key: "id",
