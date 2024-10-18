@@ -69,15 +69,28 @@ const removeAllProjectsForUser = async (userId) => {
 // 4. GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
 const getUsersByProject = async (project_id) => {
   try {
-    const usersProjects = await db.users_projects.findAll({
-      where: { project_id },
-      attributes: ["users_id", "project_id"],
-      raw: true,
+    const adminsProjects = await db.users_projects.findAll({
+      where: { project_id }, 
+      include: [
+        {
+          model: db.users, 
+          where: { user_type_id: 2 }, 
+          include: [
+            {
+              model: db.user_type, 
+              attributes: ["type"], 
+            },
+          ],
+          attributes: ["id", "user_number", "email"], 
+        },
+      ],
+      attributes: ["project_id"], 
+      raw: true, // Return results as object literals
     });
-    return usersProjects;
+    return adminsProjects;
   } catch (error) {
     console.error(
-      "Error when obtaining the users associated to the project:",
+      "Error getting administrators associated with the project:",
       error
     );
     throw error;
