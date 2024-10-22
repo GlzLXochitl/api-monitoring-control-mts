@@ -35,7 +35,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      quantity: {
+      project_assignment_quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
@@ -63,7 +63,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      number_price_item: {
+      number_cotizacion: {
         type: Sequelize.STRING,
         allowNull: false,
       },

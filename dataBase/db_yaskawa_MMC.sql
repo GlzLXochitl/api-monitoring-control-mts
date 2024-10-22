@@ -22,7 +22,7 @@ USE `mmc` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mmc`.`projects` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `identification_number` INT(30) NOT NULL,
+  `identification_number` BIGINT NOT NULL,
   `delivery_date` DATE NULL DEFAULT NULL,
   `completed` TINYINT(4) NOT NULL DEFAULT 0,
   `cost_material` INT(11) NOT NULL,
@@ -72,14 +72,14 @@ CREATE TABLE IF NOT EXISTS `mmc`.`items` (
   `assembly_id` INT(10) UNSIGNED NULL DEFAULT NULL,
   `name` VARCHAR(110) NOT NULL,
   `description` VARCHAR(255) NULL DEFAULT NULL,
-  `quantity` DECIMAL(10,0) NOT NULL,
+  `project_assignment_quantity` DECIMAL(10,0) NULL,
   `price` DECIMAL(15,2) NOT NULL,
   `currency` VARCHAR(5) NOT NULL,
   `arrived_date` DATE NULL DEFAULT NULL,
   `date_order` DATE NULL DEFAULT NULL,
   `in_assembly` TINYINT(4) NULL DEFAULT NULL,
   `number_material` INT(11) NULL DEFAULT NULL,
-  `number_price_item` VARCHAR(25) NULL DEFAULT NULL,
+  `number_cotizacion` VARCHAR(25) NULL DEFAULT NULL,
   `supplier` VARCHAR(55) NULL DEFAULT NULL,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
@@ -106,16 +106,36 @@ AUTO_INCREMENT = 60;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mmc`.`stock` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `stock_quantity` DECIMAL(10,0) NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 13;
+
+
+-- -----------------------------------------------------
+-- Table `mmc`.`stock_items`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mmc`.`stock_items` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `item_id` INT(10) UNSIGNED NOT NULL,
-  `quantity` DECIMAL(10,0) NULL DEFAULT NULL,
+  `stock_id` INT(10) UNSIGNED NOT NULL,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   INDEX `item_id_stock_fk_idx` (`item_id` ASC) VISIBLE,
-  CONSTRAINT `item_id_stock_fk`
+  INDEX `stock_id_stock_items_fk_idx` (`stock_id` ASC) VISIBLE,
+  CONSTRAINT `item_id_stock_items_fk`
     FOREIGN KEY (`item_id`)
     REFERENCES `mmc`.`items` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `stock_id_stock_items_fk`
+    FOREIGN KEY (`stock_id`)
+    REFERENCES `mmc`.`stock` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -130,15 +150,15 @@ CREATE TABLE IF NOT EXISTS `mmc`.`bom` (
   `project_id` INT(10) UNSIGNED NOT NULL,
   `assembly_id` INT(10) UNSIGNED NOT NULL,
   `item_id` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `stock_id` INT(10) UNSIGNED NULL DEFAULT NULL,
+  `stock_items_id` INT(10) UNSIGNED NULL DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   INDEX `project_id_fk_idx` (`project_id` ASC) VISIBLE,
   INDEX `assembly_id_bom_fk_idx` (`assembly_id` ASC) VISIBLE,
-  INDEX `stock_id_bom_fk_idx` (`stock_id` ASC) VISIBLE,
   INDEX `item_id_bom_fk` (`item_id` ASC) VISIBLE,
+  INDEX `stock_items_id_bom_fk_idx` (`stock_items_id` ASC) VISIBLE,
   CONSTRAINT `assembly_id_bom_fk`
     FOREIGN KEY (`assembly_id`)
     REFERENCES `mmc`.`assembly` (`id`)
@@ -154,9 +174,9 @@ CREATE TABLE IF NOT EXISTS `mmc`.`bom` (
     REFERENCES `mmc`.`projects` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `stock_id_bom_fk`
-    FOREIGN KEY (`stock_id`)
-    REFERENCES `mmc`.`stock` (`id`)
+  CONSTRAINT `stock_items_id_bom_fk`
+    FOREIGN KEY (`stock_items_id`)
+    REFERENCES `mmc`.`stock_items` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB

@@ -1,33 +1,15 @@
 //foreign keys
-const projects = require("./projects.model.js");
-const assembly = require("./assembly.model.js"); 
-const items = require("./items.model.js");
-const stockItems = require("./stock_items.model.js");
-  
+const items = require("./items.model.js"); 
+const stock = require("./stock.model.js");
+
 module.exports = (sequelize, Sequelize) => {
-  const Bom = sequelize.define(
-    "bom",
+  const StockItems = sequelize.define(
+    "stock_items",
     {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-      },
-      project_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: projects,
-          key: "id",
-        },
-      },
-      assembly_id: { 
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: assembly,
-          key: "id",
-        },
       },
       item_id: {
         type: Sequelize.INTEGER,
@@ -37,11 +19,11 @@ module.exports = (sequelize, Sequelize) => {
           key: "id",
         },
       },
-      stock_items_id: {
+      stock_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: stockItems,
+          model: stock,
           key: "id",
         },
       },
@@ -59,8 +41,8 @@ module.exports = (sequelize, Sequelize) => {
     {
       timestamps: false,
       freezeTableName: true,
-      tableName: "bom",
+      tableName: "stock_items",
     }
   );
-  return Bom;
+  return StockItems;
 };

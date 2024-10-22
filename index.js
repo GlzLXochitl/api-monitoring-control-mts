@@ -78,13 +78,7 @@ const {
   getItemsMissing,
 } = require("./queries/items.queries");
 const {
-  getAllStockk,
-  getStockByID,
-  postStock,
-  patchStockByID,
-  putStockByID,
-  deleteStockByID,
-  getStockByName,
+  getItemsWithStock
 } = require("./queries/stock.queries");
 
 ///////////////////////////////////////////////////////////////// TEST ENDPOINT
@@ -461,7 +455,17 @@ app.put("/api/putStock/:id", (req, res) => {
 app.delete("/api/deleteStock/:id", (req, res) => {
   deleteStockByID(req, res);
 });
+//////////////////////////////////////////////////////////////////// Stock_items
 
+// Endpoint para obtener items con su stock
+app.get('/api/items-with-stock', async (req, res) => {
+  try {
+    const items = await getItemsWithStock();
+    res.status(200).json(items);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 /////////////////////////////////////////////////////////////////// START SERVER
 
 //.IP_ADDRESS 

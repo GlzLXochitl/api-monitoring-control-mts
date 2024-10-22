@@ -9,15 +9,7 @@ module.exports = (sequelize, Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      item_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: items,
-          key: "id",
-        },
-      },
-      quantity: {
+      stock_quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
