@@ -18,7 +18,7 @@ module.exports = (sequelize, Sequelize) => {
           key: "id",
         },
       },
-      identification_number: {
+      assembly_identification_number: {
         type: Sequelize.STRING,
         allowNull: false,
       },

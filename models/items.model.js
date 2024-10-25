@@ -45,7 +45,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       currency: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       arrived_date: {
         type: Sequelize.DATE,

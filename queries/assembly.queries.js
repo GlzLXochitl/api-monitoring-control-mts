@@ -114,7 +114,7 @@ const putAssemblyByID = async (req, res) => {
     const assemblyId = req.params.id; //optain the id from the url
     const {
       project_id,
-      identification_number,
+      assembly_identification_number,
       description,
       delivery_date,
       completed_date,
@@ -126,7 +126,7 @@ const putAssemblyByID = async (req, res) => {
     const [updated] = await Assembly.update(
       {
         project_id,
-        identification_number,
+        assembly_identification_number,
         description,
         delivery_date,
         completed_date,

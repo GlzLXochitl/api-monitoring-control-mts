@@ -21,7 +21,7 @@ const {
   getUsersByProject,
   getAdminsByProject,
   assignUserToProject,
-  getUserWithProjectsById
+  //getUserWithProjectsById
   
 } = require("./queries/users_projects.queries");
 const {
@@ -78,7 +78,12 @@ const {
   getItemsMissing,
 } = require("./queries/items.queries");
 const {
-  getItemsWithStock
+  getItemsWithStock,
+  createItemWithStock,
+  updateItemWithStock,
+  updateStockByItemName,
+  updateItemStock
+
 } = require("./queries/stock.queries");
 
 ///////////////////////////////////////////////////////////////// TEST ENDPOINT
@@ -466,6 +471,24 @@ app.get('/api/items-with-stock', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+// Endpoint para crear un nuevo item con relación a stock
+app.post("/api/items-create", (req, res) => {
+  createItemWithStock(req, res);
+});
+
+// En el controlador o en el archivo de rutas
+app.put("/api/items-update", (req, res) => {
+  updateItemWithStock(req, res);
+});
+
+// Ruta para actualizar el stock buscando por nombre de ítem
+app.patch('/api/stock/update', updateStockByItemName);
+
+
+// Agrega este endpoint en tu archivo de rutas
+app.patch('/api/items/:itemId/stock', updateItemStock);
+
 /////////////////////////////////////////////////////////////////// START SERVER
 
 //.IP_ADDRESS 

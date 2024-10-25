@@ -24,7 +24,7 @@ const db = {};
 db.sequelize = sequelize; //access to the library
 db.sequelize = Sequelize; //acces to the instance
 
-//Models/tables
+// Importa los modelos
 db.user_type = require("../models/user_type.model.js")(sequelize, Sequelize);
 db.users = require("../models/users.model.js")(sequelize, Sequelize);
 db.users_projects = require("../models/users_projects.model.js")(sequelize, Sequelize);
@@ -34,7 +34,10 @@ db.items = require("../models/items.model.js")(sequelize, Sequelize);
 db.stock = require("../models/stock.model.js")(sequelize, Sequelize);
 db.stock_items = require("../models/stock_items.model.js")(sequelize, Sequelize);
 db.bom = require("../models/bom.model.js")(sequelize, Sequelize);
-//foreign keys
+
+
+
+// Definición de relaciones (foreign keys)
 db.users.belongsTo(db.user_type, { foreignKey: "user_type_id" });
 db.users_projects.belongsTo(db.users, { foreignKey: "users_id" });
 db.users_projects.belongsTo(db.projects, { foreignKey: "project_id" });
@@ -48,8 +51,6 @@ db.bom.belongsTo(db.assembly, { foreignKey: "assembly_id" });
 db.bom.belongsTo(db.items, { foreignKey: "item_id" });
 db.bom.belongsTo(db.stock_items, { foreignKey: "stock_items_id" });
 db.items.hasMany(db.stock_items, { foreignKey: "item_id" });
-
-
 
 //export db
 module.exports = db;
