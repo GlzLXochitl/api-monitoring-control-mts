@@ -18,7 +18,7 @@ module.exports = (sequelize, Sequelize) => {
           key: "id",
         },
       },
-      assembly_identification_number: {
+      identification_number: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -42,7 +42,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      completed_assembly: {
+      completed: {
         type: Sequelize.TINYINT,
         allowNull: false,
       },
