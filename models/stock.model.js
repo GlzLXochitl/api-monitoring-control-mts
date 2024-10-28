@@ -1,5 +1,3 @@
-const items = require("./items.model.js"); //foreign keys
-
 module.exports = (sequelize, Sequelize) => {
   const Stock = sequelize.define(
     "stock",
