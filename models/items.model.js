@@ -1,6 +1,4 @@
-// foreing keys
-const assembly = require("./assembly.model.js"); 
-const subassembly = require("./subassembly.model.js"); 
+const subassembly = require("./subassembly.model.js");   // foreing key
 
 module.exports = (sequelize, Sequelize) => {
   const Items = sequelize.define(
@@ -10,14 +8,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-      },
-      assembly_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: assembly,
-          key: "id",
-        },
       },
       subassembly_id: {
         type: Sequelize.INTEGER,
@@ -29,15 +19,15 @@ module.exports = (sequelize, Sequelize) => {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
-      project_assignment_quantity: {
+      subassembly_assignment_quantity: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       price: {
         type: Sequelize.DECIMAL(10, 2),
@@ -45,31 +35,31 @@ module.exports = (sequelize, Sequelize) => {
       },
       currency: {
         type: Sequelize.STRING,
-        allowNull: true,
+      subassemblyNull: true,
       },
       arrived_date: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       date_order: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
-      in_assembly: {
+      in_subassembly: {
         type: Sequelize.TINYINT(1),
-        allowNull: false,
+        allowNull: true,
       },
       number_material: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       number_cotizacion: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       supplier: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,

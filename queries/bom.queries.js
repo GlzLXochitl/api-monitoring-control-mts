@@ -32,7 +32,7 @@ const getBomByAssemblyWithItemsMissing = async (assemblyId) => {
     const items = await db.items.findAll({
       where: {
         assembly_id: assemblyId,
-        in_assembly: 0,
+        in_subassembly: 0,
       },
     });
     return items;

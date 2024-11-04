@@ -4,6 +4,7 @@ const db = require("../config/database");
 const Projects = db.projects;
 const UsersProjects = db.users_projects;
 const Assembly = db.assembly;
+const Subassembly = db.subassembly;
 const Items = db.items;
 
 // GET ALL PROJECTS
@@ -122,8 +123,8 @@ const postProject = async (req, res) => {
         .status(400)
         .send("The project with this identification number already exists");
     } else {
-      await Projects.create(project);
-      res.json(project);
+      const newProject = await Projects.create(project);
+      res.json(newProject); // Devolver el proyecto recién creado, que incluye el ID
     }
   } catch (error) {
     console.error("Error when creating the project:", error);
@@ -196,26 +197,43 @@ const putProjectByID = async (req, res) => {
 const deleteProjectByID = async (req, res) => {
   try {
     const projectId = req.params.id;
-    await UsersProjects.destroy({
-      where: { project_id: projectId },
-    });
-    await Items.destroy({
-      where: { project_id: projectId },
-    });
-    await Assembly.destroy({
-      where: { project_id: projectId },
-    });
-    const deleted = await Projects.destroy({
-      where: { id: projectId },
-    });
-    if (deleted) {
-      res.status(200).send("Action successfully completed");
+
+    // Eliminar registros relacionados en la tabla user_projects
+    await UsersProjects.destroy({ where: { project_id: projectId } });
+
+    // Encontrar todas las assemblyes relacionadas con el proyecto
+    const assemblies = await Assembly.findAll({ where: { project_id: projectId } });
+
+    for (const assembly of assemblies) {
+      // Encontrar todas las subassemblyes relacionadas con cada assembly
+      const subassemblies = await Subassembly.findAll({ where: { assembly_id: assembly.id } });
+
+      for (const subassembly of subassemblies) {
+        // Eliminar items relacionados con cada subassembly
+        await Items.destroy({ where: { subassembly_id: subassembly.id } });
+      }
+
+      // Eliminar items relacionados con cada assembly
+      await Items.destroy({ where: { assembly_id: assembly.id } });
+
+      // Eliminar subassemblyes relacionadas con cada assembly
+      await Subassembly.destroy({ where: { assembly_id: assembly.id } });
+    }
+
+    // Eliminar assemblyes relacionadas con el proyecto
+    await Assembly.destroy({ where: { project_id: projectId } });
+
+    // Eliminar el proyecto de la tabla projects
+    const project = await Projects.findByPk(projectId);
+    if (project) {
+      await Projects.destroy({ where: { id: projectId } });
+      res.status(200).send("Proyecto y registros relacionados eliminados exitosamente");
     } else {
-      res.status(404).send("Project not found");
+      res.status(404).send("Proyecto no encontrado");
     }
   } catch (error) {
-    console.error("Error deleting project:", error);
-    res.status(500).send("Server error");
+    console.error("Error al eliminar el proyecto y registros relacionados:", error);
+    res.status(500).send("Error del servidor");
   }
 };
 

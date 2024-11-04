@@ -561,11 +561,44 @@ INSERT INTO `MMC`.`subassembly` (`assembly_id`, `identification_number`, `descri
 
 -- insert data in items table example
 -- 15 MATERIALES EN ENSAMBLES DIRECTOS 
--- 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144.
--- 146, 147, 149, 150, 152, 153, 155, 156, 158, 159, 161, 162, 164, 165, 167, 168, 170, 171, 173, 174, 176, 177, 179, 180, 182, 183, 185, 186, 188, 189, 191, 192, 194, 195, 197, 198, 200, 201, 203, 204, 206, 207, 209, 210, 212, 213, 215, 216, 218, 219, 221, 222, 224, 225, 227, 228
+-- OPEN PROJECTS: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30 // 31, 32, 33, 34, 35, 36, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144
+-- CLOCED PROJECTS: 146, 147, 149, 150, 152, 153, 155, 156, 158, 159, 161, 162, 164, 165, 167, 168, 170, 171 // 173, 174, 176, 177, 179, 180, 182, 183, 185, 186, 188, 189, 191, 192, 194, 195, 197, 198, 200, 201, 203, 204, 206, 207, 209, 210, 212, 213, 215, 216, 218, 219, 221, 222, 224, 225, 227, 228
+INSERT INTO `MMC`.`items` (
+  `assembly_id`, `subassembly_id`, `name`, `description`, `subassembly_assignment_quantity`, `price`, `currency`, `arrived_date`, 
+  `date_order`, `in_subassembly`, `number_material`, `number_cotizacion`, `supplier`) VALUES 
+  (3, null, 'Motor de precisión', 'Motor para movimiento preciso en brazos robóticos', 1, 120, null, '2024-09-01', '2024-08-01', 0, '2047298312', '32021224', 'Supplier'),
+  (3, null, 'Sensor de proximidad', 'Detecta objetos cercanos sin contacto físico', 1, 85, null, '2024-09-01', '2024-08-01', 0, '2047382945', '32021225', 'Supplier'),
+  (3, null, 'Controlador PLC', 'Unidad de control para procesos automatizados', 1, 150, null, '2024-09-01', '2024-08-01', 0, '2047563892', '32021226', 'Supplier'),
+  (3, null, 'Actuador lineal', 'Proporciona movimiento lineal preciso', 1, 200, null, '2024-09-01', '2024-08-01', 0, '2047234098', '32021227', 'Supplier'),
+  (3, null, 'Conector de alta resistencia', 'Soporta altas corrientes en entornos industriales', 1, 60, null, '2024-09-01', '2024-08-01', 0, '2047629103', '32021228', 'Supplier'),
+  (3, null, 'Cable de alimentación industrial', 'Cable para uso en entornos de alto voltaje', 1, 30, null, '2024-09-01', '2024-08-01', 0, '2047135896', '32021229', 'Supplier'),
+  (3, null, 'Placa base de circuito', 'Base para ensamblaje de circuitos electrónicos', 1, 95, null, '2024-09-01', '2024-08-01', 0, '2047012389', '32021230', 'Supplier'),
+  (3, null, 'Batería de litio recargable', 'Fuente de energía portátil de alta duración', 1, 180, null, '2024-09-01', '2024-08-01', 0, '2047839201', '32021231', 'Supplier'),
+  (3, null, 'Carcasa de protección', 'Protege componentes internos del robot', 1, 45, null, '2024-09-01', '2024-08-01', 0, '2047328045', '32021232', 'Supplier'),
+  (3, null, 'Engranaje de alta precisión', 'Transmite fuerza en el brazo robótico', 1, 110, null, '2024-09-01', '2024-08-01', 0, '2047948391', '32021233', 'Supplier'),
+  (3, null, 'Pantalla LCD de interfaz', 'Permite la interacción y visualización de datos', 1, 75, null, '2024-09-01', '2024-08-01', 0, '2047159483', '32021234', 'Supplier'),
+  (3, null, 'Sistema de refrigeración', 'Mantiene temperatura óptima de los componentes', 1, 140, null, '2024-09-01', '2024-08-01', 0, '2047690432', '32021235', 'Supplier'),
+  (3, null, 'Amortiguador de vibración', 'Reduce el impacto de vibraciones en el robot', 1, 50, null, '2024-09-01', '2024-08-01', 0, '2047045839', '32021236', 'Supplier'),
+  (3, null, 'Control remoto inalámbrico', 'Permite operación remota del robot', 1, 105, null, '2024-09-01', '2024-08-01', 0, '2047256372', '32021237', 'Supplier'),
+  (3, null, 'Brazo extensible', 'Alcanza áreas difíciles con precisión', 1, 160, null, '2024-09-01', '2024-08-01', 0, '2047392038', '32021238', 'Supplier');
+
 -- 10 MATERIALES EN SUBENSAMBLES
--- 1, 2, 13, 14, 25, 26, 37, 38, 49, 50, 61, 62, 73, 74, 85, 86, 97, 98, 109, 110, 121, 122, 133, 134
--- 145, 148, 151, 154, 157, 160, 163, 166, 169, 172, 175, 178, 181, 184, 187, 190, 193, 196, 199, 202, 205, 208, 211, 214, 217, 220, 223, 226
+-- OPEN PROJECTS
+-- 1/1, 2/1, 3/2, 4/2, 5/13, 6/13, 7/14, 8/14, 9/25, 10/25, 11/26, 12/26, 13/37, 14/37, 15/38, 16/38, 17/49, 18/49, 19/50, 20/50, 21/61, 22/61, 23/62, 24/62, 25/73, 26/73, 27/74, 28/74, 
+-- ?? 29/85, 30/85, 31/86, 32/86, 33/97, 34/97, 35/98, 36/98, 37/109, 38/109, 39/110, 40/110, 41/121, 42/121, 43/122, 44/122, 45/133, 46/133, 47/134, 48/134
+-- CLOCED PROJECTS
+-- ?? 49/145, 50/148, 51/151, 52/154, 53/157, 54/160, 55/163, 56/166, 57/169, 58/172, 59/175, 60/178, 61/181, 
+-- ?? 62/184, 63/187, 64/190, 65/193, 66/196, 67/199, 68/202, 69/205, 70/208, 71/211, 72/214, 73/217, 74/220, 
+-- ?? 75/223, 76/226
+
+INSERT INTO `MMC`.`items` (
+  `assembly_id`, `subassembly_id`, `name`, `description`, `subassembly_assignment_quantity`, `price`, `currency`, `arrived_date`, 
+  `date_order`, `in_subassembly`, `number_material`, `number_cotizacion`, `supplier`) VALUES 
+  (1, 1, 'Cable de alimentación industrial', 'Cable para uso en entornos de alto voltaje', 1, 30, null, '2024-09-01', '2024-08-01', 0, '2047135896', '32021229', 'Supplier'),
+  (1, 1, 'Placa base de circuito', 'Base para ensamblaje de circuitos electrónicos', 1, 95, null, '2024-09-01', '2024-08-01', 0, '2047012389', '32021230', 'Supplier'),
+  (1, 1, 'Batería de litio recargable', 'Fuente de energía portátil de alta duración', 1, 180, null, '2024-09-01', '2024-08-01', 0, '2047839201', '32021231', 'Supplier');
+
+-- MATERIALES A STOCK
 
 DESCRIBE `MMC`.`items`;
 -- STOCK ITEM

@@ -95,35 +95,35 @@ const putItemByID = async (req, res) => {
   try {
     const itemId = req.params.id; //optain the id from the url
     const {
-      project_id,
       assembly_id,
+      subassembly_id,
       name,
       description,
-      quantity,
+      subassembly_assignment_quantity,
       price,
       currency,
       arrived_date,
       date_order,
-      in_assembly,
+      in_subassembly,
       number_material,
-      number_price_item,
+      number_cotizacion,
       supplier,
     } = req.body; //optain the data from the body
     //update the data in the database
     const [updated] = await Items.update(
       {
-        project_id,
         assembly_id,
+        subassembly_id,
         name,
         description,
-        quantity,
+        subassembly_assignment_quantity,
         price,
         currency,
         arrived_date,
         date_order,
-        in_assembly,
+        in_subassembly,
         number_material,
-        number_price_item,
+        number_cotizacion,
         supplier,
       },
       { where: { id: itemId } }
@@ -238,7 +238,7 @@ const getItemsArrived = async (req, res) => {
   try {
     const items = await Items.findAll({
       where: {
-        in_assembly: {
+        in_subassembly: {
           [Op.eq]: 1,
         },
       },
@@ -254,7 +254,7 @@ const getItemsMissing = async (req, res) => {
   try {
     const items = await Items.findAll({
       where: {
-        in_assembly: {
+        in_subassembly: {
           [Op.eq]: 0,
         },
       },

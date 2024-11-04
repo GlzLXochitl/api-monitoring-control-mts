@@ -34,16 +34,16 @@ const getItemsWithStock = async () => {
 const createItemWithStock = async (req, res) => {
     // Desestructuración de datos del cuerpo de la solicitud
     const {
-        project_id,
+        subassembly_id,
         assembly_id,
         name,
         description,
-        project_assignment_quantity,
+        subassembly_assignment_quantity,
         price,
         currency,
         arrived_date,
         date_order,
-        in_assembly,
+        in_subassembly,
         number_material,
         number_cotizacion,
         supplier,
@@ -58,16 +58,16 @@ const createItemWithStock = async (req, res) => {
 
         // Crear nuevo item
         const newItem = await Items.create({
-            project_id,
+            subassembly_id,
             assembly_id,
             name,
             description,
-            project_assignment_quantity,
+            subassembly_assignment_quantity,
             price,
             currency,
             arrived_date,
             date_order,
-            in_assembly,
+            in_subassembly,
             number_material,
             number_cotizacion,
             supplier,
@@ -96,21 +96,19 @@ const createItemWithStock = async (req, res) => {
 
 const updateItemWithStock = async (req, res) => {
     const {
-        item_id, // ID del item a modificar
-        project_id,
+        subassembly_id,
         assembly_id,
         name,
         description,
-        project_assignment_quantity,
+        subassembly_assignment_quantity,
         price,
         currency,
-        arrived_date,
-        date_order,
-        in_assembly,
-        number_material,
-        number_cotizacion,
-        supplier,
-        stock_quantity, // Cantidad de stock nueva
+           arrived_date,
+            date_order,
+            in_subassembly,
+            number_material,
+            number_cotizacion,
+            supplier,
     } = req.body;
 
     try {
@@ -133,7 +131,7 @@ const updateItemWithStock = async (req, res) => {
             currency,
             arrived_date,
             date_order,
-            in_assembly,
+            in_subassembly,
             number_material,
             number_cotizacion,
             supplier,
@@ -235,9 +233,6 @@ const updateItemStock = async (req, res) => {
         return res.status(500).json({ message: 'Error updating stock', error: error.message });
     }
 };
-
-
-
 
   module.exports = {
     getItemsWithStock,
