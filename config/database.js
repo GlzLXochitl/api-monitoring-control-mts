@@ -42,6 +42,7 @@ db.users_projects.belongsTo(db.users, { foreignKey: "users_id" });
 db.users_projects.belongsTo(db.projects, { foreignKey: "project_id" });
 db.assembly.belongsTo(db.projects, { foreignKey: "project_id" });
 db.subassembly.belongsTo(db.assembly, { foreignKey: "assembly_id" });
+db.items.belongsTo(db.projects, { foreignKey: "project_id" });
 db.items.belongsTo(db.assembly, { foreignKey: "assembly_id" });
 db.items.belongsTo(db.subassembly, { foreignKey: "subassembly_id" });
 db.stock_items.belongsTo(db.items, { foreignKey: "item_id" });

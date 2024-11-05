@@ -59,6 +59,11 @@ const {
   getAssemblyMissing,
 } = require("./queries/assembly.queries");
 const {
+  postSubassembly,
+  //getSubassemblyByCompletedDate,
+  //getSubassemblyByDeliveryDate,
+} = require("./queries/subassembly.queries");
+const {
   getItemsByProject,
   getBomByAssemblyWithItemsMissing,
   getItemsByAssemblyAndProject,
@@ -343,6 +348,10 @@ app.get("/api/getAssembly/arrived", (req, res) => {
 // GET ONLY ASSEMBLY IF MISSING
 app.get("/api/getAssembly/missing", (req, res) => {
   getAssemblyMissing(req, res);
+});
+///////////////////////////////////////////////////////////////// SUBASSEMBLY TABLE
+app.post("/api/postSubassembly", (req, res) => {
+  postSubassembly(req, res);
 });
 
 ///////////////////////////////////////////////////////////////// BOM TABLE

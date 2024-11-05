@@ -73,7 +73,7 @@ const getAssemblyByCompletedDate = async (req, res) => {
   }
 };
 // POST NEW ASSEMBLY
-const postAssembly = async (req, res) => {
+/*const postAssembly = async (req, res) => {
   try {
     const assembly = req.body;
     await Assembly.create(assembly);
@@ -82,7 +82,19 @@ const postAssembly = async (req, res) => {
     console.error("Error when creating the assembly:", error);
     res.status(500).send("Server error");
   }
+};*/
+// POST NEW ASSEMBLY
+const postAssembly = async (req, res) => {
+  try {
+    const assembly = req.body;
+    const newAssembly = await Assembly.create(assembly);
+    res.json(newAssembly);
+  } catch (error) {
+    console.error("Error when creating the assembly:", error);
+    res.status(500).send("Server error");
+  }
 };
+
 // PATCH ASSEMBLY BY ID
 const patchAssemblyByID = async (req, res) => {
   try {

@@ -1,4 +1,7 @@
-const subassembly = require("./subassembly.model.js");   // foreing key
+// foreing key
+const assembly = require("./assembly.model.js");
+const subassembly = require("./subassembly.model.js");   
+const projects = require("./projects.model.js");
 
 module.exports = (sequelize, Sequelize) => {
   const Items = sequelize.define(
@@ -8,6 +11,22 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
+      },
+      project_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: projects,
+          key: "id",
+        },
+      },
+      assembly_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: assembly,
+          key: "id",
+        },
       },
       subassembly_id: {
         type: Sequelize.INTEGER,
@@ -35,7 +54,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       currency: {
         type: Sequelize.STRING,
-      subassemblyNull: true,
+        allowNull: true,
       },
       arrived_date: {
         type: Sequelize.DATE,

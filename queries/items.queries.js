@@ -95,6 +95,7 @@ const putItemByID = async (req, res) => {
   try {
     const itemId = req.params.id; //optain the id from the url
     const {
+      project_id,
       assembly_id,
       subassembly_id,
       name,
@@ -112,6 +113,7 @@ const putItemByID = async (req, res) => {
     //update the data in the database
     const [updated] = await Items.update(
       {
+        project_id,
         assembly_id,
         subassembly_id,
         name,

@@ -32,7 +32,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       completed_date: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       price: {
         type: Sequelize.DECIMAL(10, 2),
