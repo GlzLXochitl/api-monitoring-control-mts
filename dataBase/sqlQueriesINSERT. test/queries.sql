@@ -637,5 +637,8 @@ INSERT INTO `MMC`.`bom` (`project_id`, `assembly_id`, `item_id`)
 VALUES (42, 13, 74);
 select * from mmc.bom;
 
-
-
+-- EJEMPLO DE ELIMINACION SQL:
+--SET SQL_SAFE_UPDATES = 1;
+--DELETE FROM mmc.stock_items WHERE item_id IN (SELECT id FROM mmc.items);
+--DELETE FROM mmc.items;
+--DELETE FROM mmc.stock;

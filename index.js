@@ -22,7 +22,6 @@ const {
   getAdminsByProject,
   assignUserToProject,
   //getUserWithProjectsById
-  
 } = require("./queries/users_projects.queries");
 const {
   getAllUsers,
@@ -62,6 +61,8 @@ const {
   postSubassembly,
   //getSubassemblyByCompletedDate,
   //getSubassemblyByDeliveryDate,
+  getSubassemblyByAssembly,
+  getSubassemblyItems,
 } = require("./queries/subassembly.queries");
 const {
   getItemsByProject,
@@ -87,8 +88,7 @@ const {
   createItemWithStock,
   updateItemWithStock,
   updateStockByItemName,
-  updateItemStock
-
+  updateItemStock,
 } = require("./queries/stock.queries");
 
 ///////////////////////////////////////////////////////////////// TEST ENDPOINT
@@ -151,7 +151,6 @@ app.get("/api/users-projects", async (req, res) => {
     res.status(500).json({ message: "Error getting users and projects" });
   }
 });
-
 
 // USERS FROM ASOCIATED PROYECT IN SPECIFIC
 app.get("/api/projects/:project_id/users", async (req, res) => {
@@ -262,8 +261,6 @@ app.get("/getUsersByUserType/:id", async (req, res) => {
   }
 });
 
-
-
 ///////////////////////////////////////////////////////////////// PROJECTS TABLE
 
 // GET ALL PROJECTS FROM PROJECTS TABLE -> ONLY FOR TESTING
@@ -350,8 +347,19 @@ app.get("/api/getAssembly/missing", (req, res) => {
   getAssemblyMissing(req, res);
 });
 ///////////////////////////////////////////////////////////////// SUBASSEMBLY TABLE
+// POST NEW SUBASSEMBLY
 app.post("/api/postSubassembly", (req, res) => {
   postSubassembly(req, res);
+});
+
+// GET SUBASSEMBLY BY ASSEMBLY ID
+app.get("/api/subassembly/assembly/:id", (req, res) => {
+  getSubassemblyByAssembly(req, res);
+});
+
+// GET ITEMS BY SUBASSEMBLY ID
+app.get("/api/subassembly/items/:id", (req, res) => {
+  getSubassemblyItems(req, res);
 });
 
 ///////////////////////////////////////////////////////////////// BOM TABLE
@@ -387,7 +395,6 @@ app.get("/projects/:projectId/assemblies/:assemblyId/items", (req, res) => {
 app.get("/api/users/name/:name", (req, res) => {
   getStockByName(req, res);
 });
-
 
 ///////////////////////////////////////////////////////////////// ITEMS TABLE
 
@@ -472,7 +479,7 @@ app.delete("/api/deleteStock/:id", (req, res) => {
 //////////////////////////////////////////////////////////////////// Stock_items
 
 // Endpoint para obtener items con su stock
-app.get('/api/items-with-stock', async (req, res) => {
+app.get("/api/items-with-stock", async (req, res) => {
   try {
     const items = await getItemsWithStock();
     res.status(200).json(items);
@@ -492,15 +499,14 @@ app.put("/api/items-update", (req, res) => {
 });
 
 // Ruta para actualizar el stock buscando por nombre de ítem
-app.patch('/api/stock/update', updateStockByItemName);
-
+app.patch("/api/stock/update", updateStockByItemName);
 
 // Agrega este endpoint en tu archivo de rutas
-app.patch('/api/items/:itemId/stock', updateItemStock);
+app.patch("/api/items/:itemId/stock", updateItemStock);
 
 /////////////////////////////////////////////////////////////////// START SERVER
 
-//.IP_ADDRESS 
+//.IP_ADDRESS
 const port = process.env.PORT || 3001; // use the port defined in the environment variables or 3000
 app.listen(port, () => console.log(`Server listening on port ${port}`)); // start the server and listen on port
 
