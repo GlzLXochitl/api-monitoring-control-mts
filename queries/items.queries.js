@@ -3,6 +3,7 @@ const db = require("../config/database");
 // names of the tables
 const Items = db.items;
 const Assembly = db.assembly;
+const Subassembly = db.subassembly;
 const Projects = db.projects;
 const Bom = db.bom;
 const { Op } = require("sequelize"); // sequelize operator for queries
@@ -268,6 +269,23 @@ const getItemsMissing = async (req, res) => {
   }
 };
 
+// GET ITEMS BY ASSEMBLY only when the assembly have null in the subassembly_id
+const getItemsByOnlyAssembly = async (req, res) => {
+  try {
+    const assemblyId = req.params.assembly_id;
+    const items = await Items.findAll({
+      where: {
+        assembly_id: assemblyId,
+        subassembly_id: null,
+      },
+    });
+    res.json(items);
+  } catch (error) {
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
+  }
+};
+
 module.exports = {
   getAllItems,
   getItemsByArrivedDate,
@@ -281,4 +299,5 @@ module.exports = {
   getItemsByNumberPrice, //Quotation number
   getItemsArrived,
   getItemsMissing,
+  getItemsByOnlyAssembly,
 };

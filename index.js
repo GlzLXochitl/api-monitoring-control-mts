@@ -82,6 +82,7 @@ const {
   getItemsByNumberPrice, //Quotation number
   getItemsArrived,
   getItemsMissing,
+  getItemsByOnlyAssembly,
 } = require("./queries/items.queries");
 const {
   getItemsWithStock,
@@ -345,6 +346,10 @@ app.get("/api/getAssembly/arrived", (req, res) => {
 // GET ONLY ASSEMBLY IF MISSING
 app.get("/api/getAssembly/missing", (req, res) => {
   getAssemblyMissing(req, res);
+});
+// GET ITEMS BY ONLY ASSEMBLY
+app.get("/api/getItems/assembly/:assembly_id", (req, res) => {
+  getItemsByOnlyAssembly(req, res);
 });
 ///////////////////////////////////////////////////////////////// SUBASSEMBLY TABLE
 // POST NEW SUBASSEMBLY

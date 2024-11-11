@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`projects` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `identification_number_UNIQUE` (`identification_number` ASC) VISIBLE)
 ENGINE = InnoDB
+AUTO_INCREMENT = 54
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -60,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`assembly` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 53
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -87,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`subassembly` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -121,17 +124,18 @@ CREATE TABLE IF NOT EXISTS `mmc`.`items` (
     REFERENCES `mmc`.`assembly` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `subassembly_items_fk`
-    FOREIGN KEY (`subassembly_id`)
-    REFERENCES `mmc`.`subassembly` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
   CONSTRAINT `project_items_fk`
     FOREIGN KEY (`project_id`)
     REFERENCES `mmc`.`projects` (`id`)
     ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `subassembly_items_fk`
+    FOREIGN KEY (`subassembly_id`)
+    REFERENCES `mmc`.`subassembly` (`id`)
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 35
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -146,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`stock` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 13
+AUTO_INCREMENT = 19
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -174,6 +178,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`stock_items` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 7
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -236,6 +241,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`user_type` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB
+AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -261,6 +267,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`users` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 35
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -288,6 +295,7 @@ CREATE TABLE IF NOT EXISTS `mmc`.`users_projects` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 116
 DEFAULT CHARACTER SET = latin1;
 
 
