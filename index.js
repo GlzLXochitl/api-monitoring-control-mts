@@ -1,6 +1,7 @@
 const express = require("express"); // importt the express library
 const app = express(); // create an instance of expres
 
+const clientIpAddress = process.env.CLIENT_IP_ADDRESS;
 
 const { Sequelize, Model, DataTypes } = require('sequelize');
 const socketIo = require('socket.io'); // Importa la biblioteca socket.io para WebSocket
@@ -118,7 +119,7 @@ const http = require('http');
 // Inicializa la aplicación Express y usa middlewares
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Cambia esto al origen correcto de tu frontend
+  origin: clientIpAddress, // Cambia esto al origen correcto de tu frontend
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -128,7 +129,7 @@ app.use(express.json()); // Middleware para parsear JSON
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173', // Permite el acceso desde el frontend
+    origin: clientIpAddress, // Permite el acceso desde el frontend
     methods: ['GET', 'POST']
   }
 });
