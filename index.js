@@ -1,5 +1,19 @@
 const express = require("express"); // importt the express library
-const app = express(); // create an instance of express
+const app = express(); // create an instance of expres
+
+
+const { Sequelize, Model, DataTypes } = require('sequelize');
+const socketIo = require('socket.io'); // Importa la biblioteca socket.io para WebSocket
+
+
+// Configura y conecta a la base de datos MySQL
+const sequelize = new Sequelize('mmc', 'root', '4Sep&&2OO3GL', {
+  host: 'localhost',
+  port: 3307,
+  dialect: 'mysql'
+});
+
+
 
 const bodyParser = require("body-parser"); // import the body-parser library
 app.use(bodyParser.json()); // use the body-parser middleware
@@ -98,6 +112,47 @@ const {
 app.get("/api/test", (req, res) => {
   res.send("Successfully connected to the server");
 });
+const http = require('http');
+
+
+// Inicializa la aplicación Express y usa middlewares
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Cambia esto al origen correcto de tu frontend
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
+app.use(express.json()); // Middleware para parsear JSON
+
+// Crea el servidor HTTP y configura Socket.IO
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: 'http://localhost:5173', // Permite el acceso desde el frontend
+    methods: ['GET', 'POST']
+  }
+});
+
+// Conectar los clientes al servidor de WebSocket
+io.on('connection', (socket) => {
+  console.log('Cliente conectado');
+  
+  // Manejar desconexión de cliente
+  socket.on('disconnect', () => {
+    console.log('Cliente desconectado');
+  });
+});
+
+// Sincronizar la base de datos y arrancar el servidor
+sequelize.sync()
+  .then(() => {
+    server.listen(3002, () => {
+      console.log('Servidor corriendo en puerto 3002');
+    });
+  })
+  .catch((error) => {
+    console.error('Error al sincronizar la base de datos', error);
+  });
 
 ///////////////////////////////////////////////////////////////// USER_TYPES TABLE
 
@@ -231,9 +286,23 @@ app.patch("/api/users/:id", (req, res) => {
   patchUserById(req, res);
 });
 // POST A NEW USER IN USERS
-app.post("/api/users", (req, res) => {
-  postUser(req, res);
+app.post("/api/users", async (req, res) => {
+  try {
+    // Llamamos a tu función 'postUser' para crear el usuario (asegurándonos de usar async/await si es necesario)
+    const newUser = await postUser(req, res);
+
+    // Después de crear el usuario, emitimos el evento de notificación a todos los clientes conectados
+    io.emit('dataUpdated', { message: 'Se ha creado un nuevo usuario' });
+
+    // Respondemos con el usuario creado
+    res.status(201).json(newUser);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al crear el usuario' });
+  }
 });
+
 // PUT USER FROM USERS
 app.put("/api/users/:id", (req, res) => {
   putUserById(req, res);

@@ -2,7 +2,7 @@
   "name": "mmc",
   "version": "1.0.0",
   "main": "index.js",
-    "scripts": {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js"
   },
@@ -15,12 +15,14 @@
     "body-parser": "^1.20.2",
     "cookie": "^0.7.2",
     "cors": "^2.8.5",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
+    "http": "^0.0.1-security",
     "mariadb": "^3.3.1",
     "mysql2": "^3.11.0",
     "nodemailer": "^6.9.15",
     "nodemon": "^3.1.4",
     "sequelize": "^6.37.3",
+    "socket.io": "^4.8.1",
     "ws": "^8.18.0"
   },
   "devDependencies": {
