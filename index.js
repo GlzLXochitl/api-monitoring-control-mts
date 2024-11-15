@@ -78,6 +78,8 @@ const {
   //getSubassemblyByDeliveryDate,
   getSubassemblyByAssembly,
   getSubassemblyItems,
+  getSubassemblyById,
+  getSubassembly,
 } = require("./queries/subassembly.queries");
 const {
   getItemsByProject,
@@ -437,6 +439,14 @@ app.get("/api/subassembly/items/:id", (req, res) => {
   getSubassemblyItems(req, res);
 });
 
+// GET SUBASSEMBLY BY ID
+app.get("/api/subassembly/:id", (req, res) => {
+  getSubassemblyById(req, res);
+});
+// GET ALL SUBASSEMBLY
+app.get("/api/subassembly", (req, res) => {
+  getSubassembly(req, res);
+});
 ///////////////////////////////////////////////////////////////// BOM TABLE
 
 // GET BOM BY ID FROM BOM TABLE

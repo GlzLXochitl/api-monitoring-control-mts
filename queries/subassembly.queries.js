@@ -53,8 +53,41 @@ const getSubassemblyItems = async (req, res) => {
       console.error("Error in obtaining the items by subassembly:", error);
       res.status(500).send("Server error in obtaining the items by subassembly");
     }
-    
   };
+
+  // GET SUBASSEMBLY BY ID
+  const getSubassemblyById = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const subassembly = await Subassembly.findByPk(id);
+      if (subassembly) {
+        res.json(subassembly);
+      } else {
+        res.status(404).send("Subassembly not found");
+      }
+    } catch (error) {
+      console.error("Error in obtaining the subassembly by id:", error);
+      res.status(500).send("Server error");
+    }
+
+  };
+
+  //GET ALL SUBASSEMBLIES
+  const getSubassembly = async (req, res) => {
+    try {
+      const subassembly = await Subassembly.findAll();
+      if (subassembly.length > 0) {
+        res.json(subassembly);
+      } else {
+        res.status(404).send("Subassembly not found");
+      }
+    } catch (error) {
+      console.error("Error in obtaining the subassembly:", error);
+      res.status(500).send("Server error");
+    }
+  };
+
+
 
 
 
@@ -115,5 +148,7 @@ module.exports = {
     /*getSubassemblyByCompletedDate,
     getSubassemblyByDelivery*/
     getSubassemblyByAssembly,
-    getSubassemblyItems
+    getSubassemblyItems,
+    getSubassemblyById,
+    getSubassembly
 };
