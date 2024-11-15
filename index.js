@@ -8,9 +8,9 @@ const socketIo = require('socket.io'); // Importa la biblioteca socket.io para W
 
 
 // Configura y conecta a la base de datos MySQL
-const sequelize = new Sequelize('mmc', 'root', '4Sep&&2OO3GL', {
+const sequelize = new Sequelize('mmc', 'root', 'jose123.', {
   host: 'localhost',
-  port: 3307,
+  port: 3306,
   dialect: 'mysql'
 });
 
@@ -116,10 +116,10 @@ app.get("/api/test", (req, res) => {
 const http = require('http');
 
 
-// Inicializa la aplicación Express y usa middlewares
+
 
 app.use(cors({
-  origin: clientIpAddress, // Cambia esto al origen correcto de tu frontend
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -129,7 +129,7 @@ app.use(express.json()); // Middleware para parsear JSON
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: clientIpAddress, // Permite el acceso desde el frontend
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST']
   }
 });
@@ -144,16 +144,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Sincronizar la base de datos y arrancar el servidor
-sequelize.sync()
-  .then(() => {
-    server.listen(3002, () => {
-      console.log('Servidor corriendo en puerto 3002');
-    });
-  })
-  .catch((error) => {
-    console.error('Error al sincronizar la base de datos', error);
-  });
 
 ///////////////////////////////////////////////////////////////// USER_TYPES TABLE
 
@@ -264,7 +254,7 @@ app.get("/api/users/:email", async (req, res) => {
     }
   } catch (error) {
     console.error("Error when obtaining the user by email:", error);
-    res.status(500).send("Server error");
+    res.status(500).send("User incorrect");
   }
 });
 // GET USER FROM USERNUMBER
@@ -284,8 +274,13 @@ app.get("/api/users/userNum/:userNum", async (req, res) => {
 });
 // PATCH USER BY ID FROM USERS
 app.patch("/api/users/:id", (req, res) => {
+  // Llamamos a la función para actualizar el usuario
   patchUserById(req, res);
+
+  // Emitimos el evento de notificación a todos los clientes conectados
+  io.emit('dataUpdated', { message: 'User has been updated' });
 });
+
 // POST A NEW USER IN USERS
 app.post("/api/users", async (req, res) => {
   try {
@@ -293,14 +288,14 @@ app.post("/api/users", async (req, res) => {
     const newUser = await postUser(req, res);
 
     // Después de crear el usuario, emitimos el evento de notificación a todos los clientes conectados
-    io.emit('dataUpdated', { message: 'Se ha creado un nuevo usuario' });
+    io.emit('dataUpdated', { message: 'Has been created a user' });
 
     // Respondemos con el usuario creado
     res.status(201).json(newUser);
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error al crear el usuario' });
+    res.status(500).json({ message: 'Error to create the user' });
   }
 });
 
@@ -308,10 +303,15 @@ app.post("/api/users", async (req, res) => {
 app.put("/api/users/:id", (req, res) => {
   putUserById(req, res);
 });
-//DELETE USER BY ID FROM USERS
+// DELETE USER BY ID FROM USERS
 app.patch("/api/users/logicDelete/:id", (req, res) => {
+  // Call the function to logically delete the user
   deleteUserByIdPatch(req, res);
+
+  // Emit the notification event to all connected clients
+  io.emit('dataUpdated', { message: 'A user has been deleted' });
 });
+
 // GET USERS BY USERTYPE FROM USERS
 app.get("/getUsersByUserType/:id", async (req, res) => {
   try {
@@ -361,19 +361,35 @@ app.get("/api/getProjectsByDeliveryDate", (req, res) => {
 // POST NEW PROJECT TO PROJECTS TABLE
 app.post("/api/postProject", (req, res) => {
   postProject(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'A new project has been created' });
 });
+
 // PATCH PROJECT BY ID FROM PROJECTS TABLE
 app.patch("/api/patchProject/:id", (req, res) => {
   patchProjectByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'A project has been updated' });
 });
+
 // PUT PROJECT BY ID FROM PROJECTS TABLE
 app.put("/api/putProject/:id", (req, res) => {
   putProjectByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'A project has been replaced' });
 });
+
 // DELETE PROJECT BY ID FROM PROJECTS TABLE
 app.delete("/api/deleteProject/:id", (req, res) => {
   deleteProjectByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'A project has been deleted' });
 });
+
 
 ///////////////////////////////////////////////////////////////// ASSEMBLY TABLE
 
@@ -392,19 +408,35 @@ app.get("/api/getAssemblyByCompletedDate", (req, res) => {
 // POST NEW ASSEMBLY TO ASSEMBLY TABLE
 app.post("/api/postAssembly", (req, res) => {
   postAssembly(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'A new assembly has been created' });
 });
+
 // PATCH ASSEMBLY BY ID FROM ASSEMBLY TABLE
 app.patch("/api/patchAssembly/:id", (req, res) => {
   patchAssemblyByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'An assembly has been updated' });
 });
+
 // PUT ASSEMBLY BY ID FROM ASSEMBLY TABLE
 app.put("/api/putAssembly/:id", (req, res) => {
   putAssemblyByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'An assembly has been replaced' });
 });
+
 // DELETE ASSEMBLY BY ID FROM ASSEMBLY TABLE
 app.delete("/api/deleteAssembly/:id", (req, res) => {
   deleteAssemblyByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: 'An assembly has been deleted' });
 });
+
 // GET ASSEMBLY BY PROJECT FK FROM ASSEMBLY TABLE
 app.get("/api/assembly/project/:id", (req, res) => {
   getAssemblyByProjectFK(req, res);
@@ -436,6 +468,8 @@ app.get("/api/subassembly/assembly/:id", (req, res) => {
 app.get("/api/subassembly/items/:id", (req, res) => {
   getSubassemblyItems(req, res);
 });
+
+
 
 ///////////////////////////////////////////////////////////////// BOM TABLE
 
@@ -488,19 +522,35 @@ app.get("/api/getItemsByDateOrder", (req, res) => {
 // POST NEW ITEM TO ITEMS TABLE
 app.post("/api/postItem", (req, res) => {
   postItem(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: '🚨 A new item has been added! 🚨' });
 });
+
 // PATCH ITEM BY ID FROM ITEMS TABLE
 app.patch("/api/patchItem/:id", (req, res) => {
   patchItemByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: '🔧 An item has been updated! 🔧' });
 });
+
 // PUT ITEM BY ID FROM ITEMS TABLE
 app.put("/api/putItem/:id", (req, res) => {
   putItemByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: '⚡ An item has been replaced! ⚡' });
 });
+
 // DELETE ITEM BY ID FROM ITEMS TABLE
 app.delete("/api/deleteItem/:id", (req, res) => {
   deleteItemByID(req, res);
+
+  // Emit notification event to all connected clients
+  io.emit('dataUpdated', { message: '❌ An item has been removed! ❌' });
 });
+
 // GET ITEMS BY PROJECT FK FROM ITEMS TABLE AND PROJECT TABLE JOIN
 app.get("/api/getItems/project/:id", (req, res) => {
   getItemsByProjectFK(req, res);
@@ -581,8 +631,15 @@ app.patch("/api/items/:itemId/stock", updateItemStock);
 
 /////////////////////////////////////////////////////////////////// START SERVER
 
-//.IP_ADDRESS
-const port = process.env.PORT || 3001; // use the port defined in the environment variables or 3000
-app.listen(port, () => console.log(`Server listening on port ${port}`)); // start the server and listen on port
+// Sincronizar la base de datos y arrancar el servidor
+sequelize.sync()
+  .then(() => {
+    server.listen(3002, () => {
+      console.log('Servidor corriendo en puerto 3002');
+    });
+  })
+  .catch((error) => {
+    console.error('Error al sincronizar la base de datos', error);
+  });
 
 module.exports = app; // Export the app for testing
