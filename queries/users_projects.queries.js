@@ -126,6 +126,36 @@ const getAdminsByProject = async (project_id) => {
     throw error;
   }
 };
+// 5. GET USERS BY PROJECT AND WHO ARE OPERS
+const getOpersByProject = async (project_id) => {
+  try {
+    const adminsProjects = await db.users_projects.findAll({
+      where: { project_id }, 
+      include: [
+        {
+          model: db.users, 
+          where: { user_type_id: 2 }, 
+          include: [
+            {
+              model: db.user_type, 
+              attributes: ["type"], 
+            },
+          ],
+          attributes: ["id", "user_number", "email"], 
+        },
+      ],
+      attributes: ["project_id"], 
+      raw: true, // Return results as object literals
+    });
+    return adminsProjects;
+  } catch (error) {
+    console.error(
+      "Error getting administrators associated with the project:",
+      error
+    );
+    throw error;
+  }
+};
 // 6. ASSIGN USER TO PROJECT
 const assignUserToProject = async (req, res) => {
   try {
@@ -144,5 +174,6 @@ module.exports = {
   removeAllProjectsForUser,
   getUsersByProject,
   getAdminsByProject,
+  getOpersByProject,
   assignUserToProject
 };

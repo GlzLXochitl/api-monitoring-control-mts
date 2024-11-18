@@ -8,9 +8,9 @@ const socketIo = require('socket.io'); // Importa la biblioteca socket.io para W
 
 
 // Configura y conecta a la base de datos MySQL
-const sequelize = new Sequelize('mmc', 'root', 'jose123.', {
+const sequelize = new Sequelize('mmc', 'root', '4Sep&&2OO3GL', {
   host: 'localhost',
-  port: 3306,
+  port: 3307,
   dialect: 'mysql'
 });
 
@@ -35,6 +35,7 @@ const {
   getUsersProjects,
   getUsersByProject,
   getAdminsByProject,
+  getOpersByProject,
   assignUserToProject,
   //getUserWithProjectsById
 } = require("./queries/users_projects.queries");
@@ -230,6 +231,22 @@ app.get("/api/projects/:project_id/admins", async (req, res) => {
     }
   } catch (error) {
     console.error("Error getting project administrators:", error);
+    res.status(500).send("Server error");
+  }
+});
+// GET USERS BY PROJECT AND WHO ARE OPERATORS
+app.get("/api/projects/:project_id/operators", async (req, res) => {
+  try {
+    const project_id = req.params.project_id;
+    const opers = await getOpersByProject(project_id);
+
+    if (opers.length > 0) {
+      res.json(opers);
+    } else {
+      res.status(404).send("No operators found for this project");
+    }
+  } catch (error) {
+    console.error("Error getting project operators:", error);
     res.status(500).send("Server error");
   }
 });
