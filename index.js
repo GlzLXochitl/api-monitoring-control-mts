@@ -91,7 +91,7 @@ const {
   getAllItems, // only for testing
   getItemsByArrivedDate,
   getItemsByDateOrder,
-  postItem,
+  postItem, // Ensure postItem is imported
   patchItemByID,
   putItemByID,
   deleteItemByID,
@@ -101,6 +101,7 @@ const {
   getItemsArrived,
   getItemsMissing,
   getItemsByOnlyAssembly,
+  getItemsByName
 } = require("./queries/items.queries");
 const {
   getItemsWithStock,
@@ -471,6 +472,10 @@ app.get("/api/getAssembly/missing", (req, res) => {
 // GET ITEMS BY ONLY ASSEMBLY
 app.get("/api/getItems/assembly/:assembly_id", (req, res) => {
   getItemsByOnlyAssembly(req, res);
+});
+// GET ITEMS BY NAME
+app.get("/api/getItems/name/:name", (req, res) => {
+  getItemsByName(req, res);
 });
 ///////////////////////////////////////////////////////////////// SUBASSEMBLY TABLE
 // POST NEW SUBASSEMBLY

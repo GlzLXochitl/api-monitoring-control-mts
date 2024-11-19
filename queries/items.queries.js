@@ -58,7 +58,7 @@ const getItemsByDateOrder = async (req, res) => {
 const postItem = async (req, res) => {
   try {
     const item = req.body;
-    await Items.create(item);
+    await Items.create(item); // Ensure Items.create is used correctly
     res.json(item);
   } catch (error) {
     console.error("Error when adding material:", error);
@@ -286,6 +286,24 @@ const getItemsByOnlyAssembly = async (req, res) => {
   }
 };
 
+//SEARCH ITEMs BY NAME
+const getItemsByName = async (req, res) => {
+  try {
+    const name = req.params.name;
+    const items = await Items.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${name}%`,
+        },
+      },
+    });
+    res.json(items);
+  } catch (error) {
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
+  }
+};
+
 module.exports = {
   getAllItems,
   getItemsByArrivedDate,
@@ -300,4 +318,5 @@ module.exports = {
   getItemsArrived,
   getItemsMissing,
   getItemsByOnlyAssembly,
+  getItemsByName
 };

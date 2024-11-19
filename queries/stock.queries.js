@@ -239,7 +239,5 @@ const updateItemStock = async (req, res) => {
     createItemWithStock,
     updateItemWithStock,
     updateStockByItemName,
-    updateItemStock
-
-  
+    updateItemStock 
 }
