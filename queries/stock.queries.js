@@ -95,23 +95,33 @@ const createItemWithStock = async (req, res) => {
 
 
 const updateItemWithStock = async (req, res) => {
-    const {
-        subassembly_id,
+    const { 
+        project_id,
         assembly_id,
         name,
         description,
-        subassembly_assignment_quantity,
+        project_assignment_quantity,
         price,
         currency,
-           arrived_date,
-            date_order,
-            in_subassembly,
-            number_material,
-            number_cotizacion,
-            supplier,
+        arrived_date,
+        date_order,
+        in_subassembly,
+        number_material,
+        number_cotizacion,
+        supplier,
+        stock_quantity // Cantidad de stock actualizada
     } = req.body;
 
+    const { item_id } = req.params; // Obtener el ID del item desde la URL
+
     try {
+        // Verificar si el ID está presente
+        if (!item_id) {
+            return res.status(400).json({
+                message: 'El item_id es requerido en la URL',
+            });
+        }
+
         // Buscar el item por su ID
         const item = await Items.findByPk(item_id);
         if (!item) {
@@ -137,34 +147,45 @@ const updateItemWithStock = async (req, res) => {
             supplier,
         });
 
-        // Buscar el stock asociado al item
+        // Buscar la relación en la tabla stock_items
         const stockItem = await StockItems.findOne({
-            where: { item_id: item_id }
+            where: { item_id },
         });
         if (!stockItem) {
+            return res.status(404).json({
+                message: 'Relación en stock_items no encontrada para el item',
+            });
+        }
+
+        // Buscar el stock asociado en la tabla stock
+        const stock = await Stock.findByPk(stockItem.stock_id);
+        if (!stock) {
             return res.status(404).json({
                 message: 'Stock no encontrado para el item',
             });
         }
 
         // Actualizar la cantidad de stock
-        await stockItem.update({
-            stock_quantity: stock_quantity,
+        await stock.update({
+            stock_quantity,
         });
 
         return res.status(200).json({
-            message: 'Item y stock actualizados exitosamente',
-            item: item,
-            stock: stockItem,
+            message: 'Item, relación en stock_items y stock actualizados exitosamente',
+            item,
+            stockItem,
+            stock,
         });
     } catch (error) {
-        console.error('Error al actualizar el item y stock:', error);
+        console.error('Error al actualizar el item, stock_items y stock:', error);
         return res.status(500).json({
-            message: 'Error al actualizar el item y stock',
+            message: 'Error al actualizar el item, stock_items y stock',
             error: error.message,
         });
     }
 };
+
+
   
 // stock.queries.js
 const updateStockByItemName = async (req, res) => {
