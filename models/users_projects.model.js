@@ -1,31 +1,23 @@
-//foreign keys
-const users = require("./users.model.js")
-const projects = require("./projects.model.js"); 
-
 module.exports = (sequelize, Sequelize) => {
-  const UsersProjects = sequelize.define
-  ('projects', {
-    id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
+  const UsersProjects = sequelize.define('users_projects', {
     users_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-        model: users,
-        key: "id",
+        model: 'users',
+        key: 'id',
       },
-    }, 
+      onDelete: 'CASCADE', // Si se elimina un usuario, se eliminan las relaciones
+    },
     project_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-          model: projects,
-          key: 'id',
+        model: 'projects',
+        key: 'id',
       },
-    },    
+      onDelete: 'CASCADE', // Si se elimina un proyecto, se eliminan las relaciones
+    },
     created_at: {
       type: Sequelize.DATE,
       allowNull: false,
@@ -38,8 +30,9 @@ module.exports = (sequelize, Sequelize) => {
     },
   }, {
     tableName: 'users_projects',
-    timestamps: false,  
+    timestamps: false,
     freezeTableName: true,
-});
+  });
+
   return UsersProjects;
 };

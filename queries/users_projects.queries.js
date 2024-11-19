@@ -1,6 +1,9 @@
 //import the database connection
 const db = require("../config/database");
+const Projects = require('../models/projects.model'); // Ajusta la ruta según sea necesario
 
+// names of the tables
+const Users = db.users;
 // 1. GET USERS WITH PROJECTS ASOCIATED
 const getUsersProjects = async () => {
   try {
@@ -168,6 +171,40 @@ const assignUserToProject = async (req, res) => {
   }
 };
 
+const getProjectsByUserId = async (userId) => {
+  try {
+    // Obtener los proyectos relacionados con un usuario utilizando la tabla intermedia users_projects
+    const userProjects = await db.users_projects.findAll({
+      where: {
+        users_id: userId,  // Aquí buscamos por el ID del usuario
+      },
+      include: [
+        {
+          model: db.projects,  // Incluir los proyectos relacionados
+          as: 'project',  // Relación definida en users_projects
+          attributes: [
+            'id',
+            'identification_number',
+            'delivery_date',
+            'completed',
+            'cost_material',
+            'description',
+            'created_at',
+            'updated_at',
+          ],  // Especificar los atributos que deseas traer
+        },
+      ],
+    });
+
+    return userProjects;
+  } catch (error) {
+    throw new Error('Error retrieving projects for the user: ' + error.message);
+  }
+};
+
+
+
+
 module.exports = {
   getUsersProjects,
   removeSpecificProjectForUser,
@@ -175,5 +212,6 @@ module.exports = {
   getUsersByProject,
   getAdminsByProject,
   getOpersByProject,
-  assignUserToProject
+  assignUserToProject,
+  getProjectsByUserId
 };

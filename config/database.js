@@ -2,10 +2,10 @@
 const { Sequelize } = require("sequelize");
 
 // Replace the connection string with your database configuration
-const sequelize = new Sequelize("mmc", "root", "4Sep&&2OO3GL", {
+const sequelize = new Sequelize("mmc", "root", "jose123.", {
   dialect: "mysql",
   host: "localhost", // Replace with your database host if different
-  port:3307
+  port:3306
 });
 
 // Test the connection
@@ -54,6 +54,14 @@ db.bom.belongsTo(db.items, { foreignKey: "item_id" });
 db.bom.belongsTo(db.stock_items, { foreignKey: "stock_items_id" });
 
 db.items.hasMany(db.stock_items, { foreignKey: "item_id" }); // One-to-Many relationship??
+
+
+db.users.hasMany(db.users_projects, { foreignKey: 'users_id' });
+db.projects.hasMany(db.users_projects, { foreignKey: 'project_id' });
+db.users_projects.belongsTo(db.projects, { foreignKey: 'project_id' });
+db.users.hasMany(db.users_projects, { foreignKey: "users_id" }); // Un usuario puede tener muchos proyectos a través de users_projects
+db.projects.hasMany(db.users_projects, { foreignKey: "project_id" }); // Un proyecto puede tener muchos usuarios a través de users_projects
+
 
 //export db
 module.exports = db;

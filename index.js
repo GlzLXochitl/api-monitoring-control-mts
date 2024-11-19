@@ -1,6 +1,6 @@
 const express = require("express"); // importt the express library
 const app = express(); // create an instance of expres
-
+const { UsersProjects, projects } = require('./config/database.js'); // Asegúrate de la ruta correcta
 const clientIpAddress = process.env.CLIENT_IP_ADDRESS;
 
 const { Sequelize, Model, DataTypes } = require('sequelize');
@@ -8,9 +8,9 @@ const socketIo = require('socket.io'); // Importa la biblioteca socket.io para W
 
 
 // Configura y conecta a la base de datos MySQL
-const sequelize = new Sequelize('mmc', 'root', '4Sep&&2OO3GL', {
+const sequelize = new Sequelize('mmc', 'root', 'jose123.', {
   host: 'localhost',
-  port: 3307,
+  port: 3306,
   dialect: 'mysql'
 });
 
@@ -37,6 +37,7 @@ const {
   getAdminsByProject,
   getOpersByProject,
   assignUserToProject,
+  getProjectsByUserId
   //getUserWithProjectsById
 } = require("./queries/users_projects.queries");
 const {
@@ -109,6 +110,26 @@ const {
   updateStockByItemName,
   updateItemStock,
 } = require("./queries/stock.queries");
+
+
+
+
+
+
+// Ruta para obtener los proyectos relacionados con un usuario
+app.get("/api/users/:userId/projects", async (req, res) => {
+  const userId = req.params.userId;  // Obtén el ID del usuario desde los parámetros de la ruta
+  try {
+    const projects = await getProjectsByUserId(userId);  // Llamamos a la función para obtener los proyectos
+    res.json(projects);  // Devolvemos los proyectos como respuesta en formato JSON
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error retrieving user projects',
+      error: error.message,
+    });
+  }
+});
+
 
 ///////////////////////////////////////////////////////////////// TEST ENDPOINT
 
