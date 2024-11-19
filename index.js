@@ -131,7 +131,7 @@ app.get("/api/users/:userId/projects", async (req, res) => {
 });
 
 
-///////////////////////////////////////////////////////////////// TEST ENDPOINT
+///////////////////////////////////////////////////////// TEST ENDPOINT
 
 // TEST ROUTE TO CHECK IF THE SERVER IS RUNNING
 app.get("/api/test", (req, res) => {
