@@ -665,7 +665,7 @@ app.post("/api/items-create", (req, res) => {
 });
 
 // En el controlador o en el archivo de rutas
-app.put("/api/items-update", (req, res) => {
+app.patch("/items/:item_id", (req, res) => {
   updateItemWithStock(req, res);
 });
 
