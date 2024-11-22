@@ -304,6 +304,26 @@ const getItemsByName = async (req, res) => {
   }
 };
 
+// GAET ITEMS BY NAME AND PROJECT ID
+const getItemsByNameAndProjectID = async (req, res) => {
+  try {
+    const name = req.params.name;
+    const project_id = req.params.project_id;
+    const items = await Items.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${name}%`,
+        },
+        project_id: project_id,
+      },
+    });
+    res.json(items);
+  } catch (error) {
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
+  }
+};
+
 module.exports = {
   getAllItems,
   getItemsByArrivedDate,
@@ -318,5 +338,6 @@ module.exports = {
   getItemsArrived,
   getItemsMissing,
   getItemsByOnlyAssembly,
-  getItemsByName
+  getItemsByName,
+  getItemsByNameAndProjectID,
 };

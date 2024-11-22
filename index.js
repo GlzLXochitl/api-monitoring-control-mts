@@ -8,9 +8,9 @@ const socketIo = require('socket.io'); // Importa la biblioteca socket.io para W
 
 
 // Configura y conecta a la base de datos MySQL
-const sequelize = new Sequelize('mmc', 'root', 'jose123.', {
+const sequelize = new Sequelize('mmc', 'root', '4Sep&&2OO3GL', {
   host: 'localhost',
-  port: 3306,
+  port: 3307,
   dialect: 'mysql'
 });
 
@@ -102,7 +102,8 @@ const {
   getItemsArrived,
   getItemsMissing,
   getItemsByOnlyAssembly,
-  getItemsByName
+  getItemsByName,
+  getItemsByNameAndProjectID
 } = require("./queries/items.queries");
 const {
   getItemsWithStock,
@@ -110,6 +111,7 @@ const {
   updateItemWithStock,
   updateStockByItemName,
   updateItemStock,
+  deleteItemStock
 } = require("./queries/stock.queries");
 
 
@@ -498,6 +500,10 @@ app.get("/api/getItems/assembly/:assembly_id", (req, res) => {
 app.get("/api/getItems/name/:name", (req, res) => {
   getItemsByName(req, res);
 });
+// GET ITEMS BY NAME AND PROJECT ID
+app.get("/api/getItems/name/:name/project/:project_id", (req, res) => {
+  getItemsByNameAndProjectID(req, res);
+});
 ///////////////////////////////////////////////////////////////// SUBASSEMBLY TABLE
 // POST NEW SUBASSEMBLY
 app.post("/api/postSubassembly", (req, res) => {
@@ -679,6 +685,11 @@ app.patch("/api/stock/update", updateStockByItemName);
 
 // Agrega este endpoint en tu archivo de rutas
 app.patch("/api/items/:itemId/stock", updateItemStock);
+
+// delete item stock
+app.delete("/api/items/:itemId/stock", (req, res) => {
+  deleteItemStock(req, res);
+});
 
 /////////////////////////////////////////////////////////////////// START SERVER
 

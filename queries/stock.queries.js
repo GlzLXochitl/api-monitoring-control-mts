@@ -255,10 +255,51 @@ const updateItemStock = async (req, res) => {
     }
 };
 
+// Delete item in stock (delete item, stock and stock_item)
+const deleteItemStock = async (req, res) => {
+    const { itemId } = req.params;
+
+    try {
+        // Find the item
+        const item = await Items.findByPk(itemId);
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        // Find the stock_item
+        const stockItem = await StockItems.findOne({ where: { item_id: itemId } });
+        if (!stockItem) {
+            return res.status(404).json({ message: 'Stock item not found' });
+        }
+
+        // Find the stock
+        const stock = await Stock.findByPk(stockItem.stock_id);
+        if (!stock) {
+            return res.status(404).json({ message: 'Stock not found' });
+        }
+
+        // Delete the stock_item first to avoid foreign key constraint issues
+        await stockItem.destroy();
+        // Delete the item
+        await item.destroy();
+        // Delete the stock
+        await stock.destroy();
+
+        return res.status(200).json({ message: 'Item and stock deleted successfully' });
+    }
+    catch (error) {
+        console.error('Error deleting item and stock:', error);
+        return res.status(500).json({ message: 'Error deleting item and stock', error: error.message });
+    }
+}
+
+
+
   module.exports = {
     getItemsWithStock,
     createItemWithStock,
     updateItemWithStock,
     updateStockByItemName,
-    updateItemStock 
+    updateItemStock,
+    deleteItemStock
 }
