@@ -117,13 +117,15 @@ const {
 
 
 
-
-// Ruta para obtener los proyectos relacionados con un usuario
 app.get("/api/users/:userId/projects", async (req, res) => {
-  const userId = req.params.userId;  // Obtén el ID del usuario desde los parámetros de la ruta
+  const userId = req.params.userId; // Obtén el ID del usuario desde los parámetros de la ruta
   try {
-    const projects = await getProjectsByUserId(userId);  // Llamamos a la función para obtener los proyectos
-    res.json(projects);  // Devolvemos los proyectos como respuesta en formato JSON
+    const projects = await getProjectsByUserId(userId); // Llamamos a la función para obtener los proyectos
+    
+    // Filtrar los proyectos para incluir solo aquellos que están activos
+    const activeProjects = projects.filter(project => project.project.completed === 0);
+
+    res.json(activeProjects); // Devolvemos solo los proyectos activos como respuesta en formato JSON
   } catch (error) {
     res.status(500).json({
       message: 'Error retrieving user projects',
@@ -131,6 +133,7 @@ app.get("/api/users/:userId/projects", async (req, res) => {
     });
   }
 });
+
 
 
 ///////////////////////////////////////////////////////// TEST ENDPOINT
@@ -145,8 +148,8 @@ const http = require('http');
 
 
 app.use(cors({
-  origin: 'http://localhost:5173',
-  //origin: 'http://10.12.6.30:5173',
+  //origin: 'http://localhost:5173',
+  origin: 'http://10.12.6.30:5173',
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -156,8 +159,8 @@ app.use(express.json()); // Middleware para parsear JSON
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173',
-    //origin: 'http://10.12.6.30:5173',
+    //origin: 'http://localhost:5173',
+    origin: 'http://10.12.6.30:5173',
     methods: ['GET', 'POST']
   }
 });
