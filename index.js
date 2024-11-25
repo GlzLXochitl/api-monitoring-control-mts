@@ -96,6 +96,7 @@ const {
   putItemByID,
   deleteItemByID,
   getItemsByProjectFK,
+  getInactivesItemsByProjectFK,
   getItemsByAssemblyProjectFK,
   getItemsByNumberPrice, //Quotation number
   getItemsArrived,
@@ -110,7 +111,8 @@ const {
   updateItemWithStock,
   updateStockByItemName,
   updateItemStock,
-  deleteItemStock
+  deleteItemStock,
+  deleteStockByItemId
 } = require("./queries/stock.queries");
 
 
@@ -621,6 +623,10 @@ app.delete("/api/deleteItem/:id", (req, res) => {
 app.get("/api/getItems/project/:id", (req, res) => {
   getItemsByProjectFK(req, res);
 });
+// GET INACTIVES ITEMS BY PROJECT FK FROM ITEMS TABLE AND PROJECT TABLE JOIN
+app.get("/api/getItems/project/inactives/:id", (req, res) => {
+  getInactivesItemsByProjectFK(req, res);
+});
 // GET ITEMS BY ASSEMBLY AND PROJECT FK FROM ITEMS TABLE, ASSEMBLY TABLE AND PROJECTS TABLE JOIN
 app.get(
   "/api/getItems/project/assembly/:project_id/:assembly_id",
@@ -698,6 +704,10 @@ app.patch("/api/items/:itemId/stock", updateItemStock);
 // delete item stock
 app.delete("/api/items/:itemId/stock", (req, res) => {
   deleteItemStock(req, res);
+});
+// delete stock by item id
+app.delete("/api/stock/:itemId", (req, res) => {
+  deleteStockByItemId(req, res);
 });
 
 /////////////////////////////////////////////////////////////////// START SERVER

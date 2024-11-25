@@ -188,6 +188,26 @@ const getItemsByProjectFK = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+// GET ITEMS BY PROJECT FK FROM ITEMS TABLE AND PROJECT TABLE JOIN ONLY WHEN THE ITEM HAVE in_subassembly ES 0
+const getInactivesItemsByProjectFK = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const items = await Items.findAll({
+      where: { project_id: projectId, in_subassembly: 0 },
+      include: [
+        {
+          model: Projects,
+          where: { id: projectId },
+        },
+      ],
+    });
+    res.json(items);
+  } catch (error) {
+    console.error("Error in obtaining materials by project:", error);
+    res.status(500).send("Server error");
+  }
+};
+
 // GET ITEMS BY ASSEMBLY AND PROJECT FK FROM ITEMS TABLE, ASSEMBLY TABLE AND PROJECTS TABLE JOIN
 const getItemsByAssemblyProjectFK = async (req, res) => {
   try {
@@ -333,6 +353,7 @@ module.exports = {
   putItemByID,
   deleteItemByID,
   getItemsByProjectFK,
+  getInactivesItemsByProjectFK,
   getItemsByAssemblyProjectFK,
   getItemsByNumberPrice, //Quotation number
   getItemsArrived,
