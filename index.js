@@ -76,8 +76,7 @@ const {
 } = require("./queries/assembly.queries");
 const {
   postSubassembly,
-  //getSubassemblyByCompletedDate,
-  //getSubassemblyByDeliveryDate,
+  patchSubassembly,
   getSubassemblyByAssembly,
   getSubassemblyItems,
   getSubassemblyById,
@@ -147,6 +146,7 @@ const http = require('http');
 
 app.use(cors({
   origin: 'http://localhost:5173',
+  //origin: 'http://10.12.6.30:5173',
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -157,6 +157,7 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: 'http://localhost:5173',
+    //origin: 'http://10.12.6.30:5173',
     methods: ['GET', 'POST']
   }
 });
@@ -508,6 +509,11 @@ app.get("/api/getItems/name/:name/project/:project_id", (req, res) => {
 // POST NEW SUBASSEMBLY
 app.post("/api/postSubassembly", (req, res) => {
   postSubassembly(req, res);
+});
+
+// PATCH SUBASSEMBLY BY ID
+app.patch("/api/patchSubassembly/:id", (req, res) => {
+  patchSubassembly(req, res);
 });
 
 // GET SUBASSEMBLY BY ASSEMBLY ID
