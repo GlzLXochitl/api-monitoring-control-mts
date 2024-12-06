@@ -226,11 +226,10 @@ const getItemsByAssemblyProjectFK = async (req, res) => {
         },
       ],
     });
-    if (items.length > 0) {
-      res.status(200).json(items);
-    } else {
-      res.status(404).json({ message: "No items found" });
-    }
+    res.status(200).json({
+      message: items.length > 0 ? "Items found" : "No items found",
+      data: items,
+    });
   } catch (error) {
     console.error(
       "Error in obtaining materials by assembly and project:",

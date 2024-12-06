@@ -100,6 +100,45 @@ const patchAssemblyByID = async (req, res) => {
   try {
     const assemblyId = req.params.id; // Get the assembly ID from request parameters
     const assembly = req.body; // Get the update data from the request body
+
+    // Fetch the existing assembly
+    const existingAssembly = await Assembly.findOne({ where: { id: assemblyId } });
+
+    if (!existingAssembly) {
+      return res.status(404).json({ message: "Assembly not found" });
+    }
+
+    // Check if there are any changes
+    const isChanged = Object.keys(assembly).some(key => assembly[key] !== existingAssembly[key]);
+
+    if (isChanged) {
+      // Update the assembly in the database
+      const [updated] = await Assembly.update(assembly, {
+        where: { id: assemblyId },
+      });
+
+      if (updated > 0) {
+        // Find and return the updated assembly
+        const updatedAssembly = await Assembly.findOne({
+          where: { id: assemblyId },
+        });
+        return res.json(updatedAssembly);
+      }
+    }
+
+    // If no changes, return the existing assembly
+    return res.json(existingAssembly);
+  } catch (error) {
+    // Handle any errors during the update process
+    console.error("Error updating the assembly:", error);
+    res.status(500).send("Server error");
+  }
+};
+/*
+const patchAssemblyByID = async (req, res) => {
+  try {
+    const assemblyId = req.params.id; // Get the assembly ID from request parameters
+    const assembly = req.body; // Get the update data from the request body
     // Update the assembly in the database
     const [updated] = await Assembly.update(assembly, {
       where: { id: assemblyId },
@@ -120,6 +159,7 @@ const patchAssemblyByID = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+*/
 // PUT ASSEMBLY BY ID
 const putAssemblyByID = async (req, res) => {
   try {
@@ -234,6 +274,25 @@ const getAssemblyByProjectFK = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+/*
+const getAssemblyByProjectFK = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const assembly = await Assembly.findAll({
+      where: {
+        project_id: projectId,
+      },
+    });
+    res.status(200).json({
+      message: assembly.length > 0 ? "Assemblies found" : "No assemblies found",
+      data: assembly,
+    });
+  } catch (error) {
+    console.error("Error obtaining project assemblies:", error);
+    res.status(500).send("Server error");
+  }
+};
+*/
 // GET ASSEMBLY ARRIVED
 const getAssemblyArrived = async (req, res) => {
   try {

@@ -42,11 +42,7 @@ const getSubassemblyByAssembly = async (req, res) => {
       const subassembly = await Subassembly.findAll({
         where: { assembly_id: id },
       });
-      if (subassembly.length > 0) {
-        res.json(subassembly);
-      } else {
-        res.status(404).send("Subassembly not found");
-      }
+      res.status(200).json(subassembly);
     } catch (error) {
       console.error("Error in obtaining the subassembly by assembly:", error);
       res.status(500).send("Server error");
@@ -55,6 +51,18 @@ const getSubassemblyByAssembly = async (req, res) => {
 
 // GET ITEMS BY SUBASSEMBLY ID
 const getSubassemblyItems = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const items = await Item.findAll({
+            where: { subassembly_id: id },
+        });
+        res.json(items);
+    } catch (error) {
+        console.error("Error in obtaining the items by subassembly:", error);
+        res.status(500).send("Server error in obtaining the items by subassembly");
+    }
+};
+/*const getSubassemblyItems = async (req, res) => {
     // get all items to the const Item = db.items; when camp subassembly_id is equal to the id in the request
     try {
       const id = req.params.id;
@@ -70,7 +78,7 @@ const getSubassemblyItems = async (req, res) => {
       console.error("Error in obtaining the items by subassembly:", error);
       res.status(500).send("Server error in obtaining the items by subassembly");
     }
-  };
+  };*/
 
   // GET SUBASSEMBLY BY ID
   const getSubassemblyById = async (req, res) => {
