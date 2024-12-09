@@ -343,6 +343,25 @@ const getItemsByNameAndProjectID = async (req, res) => {
   }
 };
 
+// get all items with the assembly id
+const getItemsByAssemblyID = async (req, res) => {
+  try {
+    const assemblyId = req.params.assembly_id;
+    const items = await Items.findAll({
+      where: {
+        assembly_id: assemblyId,
+      },
+    });
+    res.json(items);
+  }
+  catch (error) {
+    console.error("Error in obtaining materials:", error);
+    res.status(500).send("Server error");
+  }
+}
+
+
+
 module.exports = {
   getAllItems,
   getItemsByArrivedDate,
@@ -360,4 +379,5 @@ module.exports = {
   getItemsByOnlyAssembly,
   getItemsByName,
   getItemsByNameAndProjectID,
+  getItemsByAssemblyID
 };

@@ -103,7 +103,8 @@ const {
   getItemsMissing,
   getItemsByOnlyAssembly,
   getItemsByName,
-  getItemsByNameAndProjectID
+  getItemsByNameAndProjectID,
+  getItemsByAssemblyID
 } = require("./queries/items.queries");
 const {
   getItemsWithStock,
@@ -645,6 +646,11 @@ app.get("/api/getItems/arrived", (req, res) => {
 // GET ONLY ITEMS IF MISSING
 app.get("/api/getItems/missing", (req, res) => {
   getItemsMissing(req, res);
+});
+
+// GET ITEMS BY ASSEMBLY ID
+app.get("/api/getItems/assembly/:id", (req, res) => {
+  getItemsByAssemblyID(req, res);
 });
 
 /////////////////////////////////////////////////////////////////// STOCK TABLE
