@@ -8,9 +8,9 @@ const socketIo = require('socket.io'); // Importa la biblioteca socket.io para W
 
 
 // Configura y conecta a la base de datos MySQL
-const sequelize = new Sequelize('mmc', 'root', 'jose123.', {
+const sequelize = new Sequelize('mmc', 'root', '4Sep&&2OO3GL', {
   host: 'localhost',
-  port: 3306,
+  port: 3307,
   dialect: 'mysql'
 });
 
@@ -151,8 +151,8 @@ const http = require('http');
 
 
 app.use(cors({
-  //origin: 'http://localhost:5173',
- origin: 'http://10.12.6.30:5173',
+  origin: 'http://localhost:5173',
+  //origin: 'http://10.12.6.30:5173',
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -162,8 +162,8 @@ app.use(express.json()); // Middleware para parsear JSON
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    //origin: 'http://localhost:5173',
-    origin: 'http://10.12.6.30:5173',
+    origin: 'http://localhost:5173',
+    //origin: 'http://10.12.6.30:5173',
     methods: ['GET', 'POST']
   }
 });
