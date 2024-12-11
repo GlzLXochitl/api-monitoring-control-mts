@@ -1,6 +1,4 @@
-// import the database connection
 const db = require("../config/database");
-// names of the tables
 const Assembly = db.assembly;
 const Projects = db.projects;
 const Items = db.items;
@@ -34,7 +32,6 @@ const getAssemblyByDeliveryDate = async (req, res) => {
       ],
       order: [["delivery_date", "ASC"]],
     });
-
     if (!assemblies.length) {
       return res.status(404).json({ message: "Assembly not found" });
     }
@@ -94,7 +91,6 @@ const postAssembly = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 // PATCH ASSEMBLY BY ID
 const patchAssemblyByID = async (req, res) => {
   try {
@@ -102,14 +98,18 @@ const patchAssemblyByID = async (req, res) => {
     const assembly = req.body; // Get the update data from the request body
 
     // Fetch the existing assembly
-    const existingAssembly = await Assembly.findOne({ where: { id: assemblyId } });
+    const existingAssembly = await Assembly.findOne({
+      where: { id: assemblyId },
+    });
 
     if (!existingAssembly) {
       return res.status(404).json({ message: "Assembly not found" });
     }
 
     // Check if there are any changes
-    const isChanged = Object.keys(assembly).some(key => assembly[key] !== existingAssembly[key]);
+    const isChanged = Object.keys(assembly).some(
+      (key) => assembly[key] !== existingAssembly[key]
+    );
 
     if (isChanged) {
       // Update the assembly in the database

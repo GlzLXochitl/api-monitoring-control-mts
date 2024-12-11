@@ -1,20 +1,23 @@
 const express = require("express"); // importt the express library
 const app = express(); // create an instance of expres
-const { UsersProjects, projects } = require('./config/database.js'); // Asegúrate de la ruta correcta
-const clientIpAddress = process.env.CLIENT_IP_ADDRESS;
+const { Sequelize, Model, DataTypes } = require("sequelize");
+const socketIo = require("socket.io"); // Importa la biblioteca socket.io para WebSocket
 
-const { Sequelize, Model, DataTypes } = require('sequelize');
-const socketIo = require('socket.io'); // Importa la biblioteca socket.io para WebSocket
-
+const config = require("./config/config.json");
+const env = process.env.NODE_ENV || "development";
+const dbConfig = config[env];
 
 // Configura y conecta a la base de datos MySQL
-const sequelize = new Sequelize('mmc', 'root', '4Sep&&2OO3GL', {
-  host: 'localhost',
-  port: 3307,
-  dialect: 'mysql'
-});
-
-
+const sequelize = new Sequelize(
+  dbConfig.database,
+  dbConfig.username,
+  dbConfig.password,
+  {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    dialect: dbConfig.dialect,
+  }
+);
 
 const bodyParser = require("body-parser"); // import the body-parser library
 app.use(bodyParser.json()); // use the body-parser middleware
@@ -37,7 +40,7 @@ const {
   getAdminsByProject,
   getOpersByProject,
   assignUserToProject,
-  getProjectsByUserId
+  getProjectsByUserId,
   //getUserWithProjectsById
 } = require("./queries/users_projects.queries");
 const {
@@ -104,7 +107,7 @@ const {
   getItemsByOnlyAssembly,
   getItemsByName,
   getItemsByNameAndProjectID,
-  getItemsByAssemblyID
+  getItemsByAssemblyID,
 } = require("./queries/items.queries");
 const {
   getItemsWithStock,
@@ -113,85 +116,66 @@ const {
   updateStockByItemName,
   updateItemStock,
   deleteItemStock,
-  deleteStockByItemId
+  deleteStockByItemId,
 } = require("./queries/stock.queries");
-
-
-
-
 
 app.get("/api/users/:userId/projects", async (req, res) => {
   const userId = req.params.userId; // Obtén el ID del usuario desde los parámetros de la ruta
   try {
     const projects = await getProjectsByUserId(userId); // Llamamos a la función para obtener los proyectos
-    
+
     // Filtrar los proyectos para incluir solo aquellos que están activos
-    const activeProjects = projects.filter(project => project.project.completed === 0);
+    const activeProjects = projects.filter(
+      (project) => project.project.completed === 0
+    );
 
     res.json(activeProjects); // Devolvemos solo los proyectos activos como respuesta en formato JSON
   } catch (error) {
     res.status(500).json({
-      message: 'Error retrieving user projects',
+      message: "Error retrieving user projects",
       error: error.message,
     });
   }
 });
-
-
-
-///////////////////////////////////////////////////////// TEST ENDPOINT
-
 // TEST ROUTE TO CHECK IF THE SERVER IS RUNNING
 app.get("/api/test", (req, res) => {
   res.send("Successfully connected to the server");
 });
-const http = require('http');
 
+const http = require("http");
+app.use(
+  cors({
+    origin: process.env.CLIENT_IP_ADDRESS,
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 
-
-
-app.use(cors({
-  origin: 'http://localhost:5173',
-  //origin: 'http://10.12.6.30:5173',
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
 app.use(express.json()); // Middleware para parsear JSON
 
 // Crea el servidor HTTP y configura Socket.IO
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173',
-    //origin: 'http://10.12.6.30:5173',
-    methods: ['GET', 'POST']
-  }
+    origin: process.env.CLIENT_IP_ADDRESS,
+    methods: ["GET", "POST"],
+  },
 });
 
 // Conectar los clientes al servidor de WebSocket
-io.on('connection', (socket) => {
-  console.log('Cliente conectado');
-  
+io.on("connection", (socket) => {
+  console.log("Cliente conectado");
+
   // Manejar desconexión de cliente
-  socket.on('disconnect', () => {
-    console.log('Cliente desconectado');
+  socket.on("disconnect", () => {
+    console.log("Cliente desconectado");
   });
 });
-
-
-///////////////////////////////////////////////////////////////// USER_TYPES TABLE
 
 // GET ALL USER TYPES FROM USER_TYPES TABLE
 app.get("/api/getUserTypes", (req, res) => {
   getAllUserTypes(req, res);
 });
-
-////////////////////////////////////////////////////////////////// USER_PROYECTS TABLE
-
-// Middleware para manejar errores asíncronos
-/*const asyncHandler = (fn) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};*/
 // DELETE PROJECTS FOR A SPECIFIC USER
 app.delete("/usuarios/:userId/proyectos/:projectId", async (req, res) => {
   try {
@@ -232,7 +216,6 @@ app.get("/api/users-projects", async (req, res) => {
     res.status(500).json({ message: "Error getting users and projects" });
   }
 });
-
 // USERS FROM ASOCIATED PROYECT IN SPECIFIC
 app.get("/api/projects/:project_id/users", async (req, res) => {
   try {
@@ -285,9 +268,6 @@ app.get("/api/projects/:project_id/operators", async (req, res) => {
 app.post("/api/user_assign_project", async (req, res) => {
   assignUserToProject(req, res);
 });
-
-///////////////////////////////////////////////////////////////// USERS TABLE
-
 // GET ALL USERS FROM USERS
 app.get("/api/getUsers", (req, res) => {
   getAllUsers(req, res);
@@ -326,29 +306,23 @@ app.get("/api/users/userNum/:userNum", async (req, res) => {
 app.patch("/api/users/:id", (req, res) => {
   // Llamamos a la función para actualizar el usuario
   patchUserById(req, res);
-
   // Emitimos el evento de notificación a todos los clientes conectados
-  io.emit('dataUpdated', { message: 'User has been updated' });
+  io.emit("dataUpdated", { message: "User has been updated" });
 });
-
 // POST A NEW USER IN USERS
 app.post("/api/users", async (req, res) => {
   try {
     // Llamamos a tu función 'postUser' para crear el usuario (asegurándonos de usar async/await si es necesario)
     const newUser = await postUser(req, res);
-
     // Después de crear el usuario, emitimos el evento de notificación a todos los clientes conectados
-    io.emit('dataUpdated', { message: 'Has been created a user' });
-
+    io.emit("dataUpdated", { message: "Has been created a user" });
     // Respondemos con el usuario creado
     res.status(201).json(newUser);
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error to create the user' });
+    res.status(500).json({ message: "Error to create the user" });
   }
 });
-
 // PUT USER FROM USERS
 app.put("/api/users/:id", (req, res) => {
   putUserById(req, res);
@@ -359,9 +333,8 @@ app.patch("/api/users/logicDelete/:id", (req, res) => {
   deleteUserByIdPatch(req, res);
 
   // Emit the notification event to all connected clients
-  io.emit('dataUpdated', { message: 'A user has been deleted' });
+  io.emit("dataUpdated", { message: "A user has been deleted" });
 });
-
 // GET USERS BY USERTYPE FROM USERS
 app.get("/getUsersByUserType/:id", async (req, res) => {
   try {
@@ -381,9 +354,6 @@ app.get("/getUsersByUserType/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-
-///////////////////////////////////////////////////////////////// PROJECTS TABLE
-
 // GET ALL PROJECTS FROM PROJECTS TABLE -> ONLY FOR TESTING
 app.get("/api/getProjects", (req, res) => {
   getAllProjects(req, res);
@@ -411,38 +381,27 @@ app.get("/api/getProjectsByDeliveryDate", (req, res) => {
 // POST NEW PROJECT TO PROJECTS TABLE
 app.post("/api/postProject", (req, res) => {
   postProject(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'A new project has been created' });
+  io.emit("dataUpdated", { message: "A new project has been created" });
 });
-
 // PATCH PROJECT BY ID FROM PROJECTS TABLE
 app.patch("/api/patchProject/:id", (req, res) => {
   patchProjectByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'A project has been updated' });
+  io.emit("dataUpdated", { message: "A project has been updated" });
 });
-
 // PUT PROJECT BY ID FROM PROJECTS TABLE
 app.put("/api/putProject/:id", (req, res) => {
   putProjectByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'A project has been replaced' });
+  io.emit("dataUpdated", { message: "A project has been replaced" });
 });
-
 // DELETE PROJECT BY ID FROM PROJECTS TABLE
 app.delete("/api/deleteProject/:id", (req, res) => {
   deleteProjectByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'A project has been deleted' });
+  io.emit("dataUpdated", { message: "A project has been deleted" });
 });
-
-
-///////////////////////////////////////////////////////////////// ASSEMBLY TABLE
-
 // GET ASSEMBLY BY ID FROM ASSEMBLY TABLE
 app.get("/api/getAssambly/:id", (req, res) => {
   getAssamblyByID(req, res);
@@ -458,35 +417,27 @@ app.get("/api/getAssemblyByCompletedDate", (req, res) => {
 // POST NEW ASSEMBLY TO ASSEMBLY TABLE
 app.post("/api/postAssembly", (req, res) => {
   postAssembly(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'A new assembly has been created' });
+  io.emit("dataUpdated", { message: "A new assembly has been created" });
 });
-
 // PATCH ASSEMBLY BY ID FROM ASSEMBLY TABLE
 app.patch("/api/patchAssembly/:id", (req, res) => {
   patchAssemblyByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'An assembly has been updated' });
+  io.emit("dataUpdated", { message: "An assembly has been updated" });
 });
-
 // PUT ASSEMBLY BY ID FROM ASSEMBLY TABLE
 app.put("/api/putAssembly/:id", (req, res) => {
   putAssemblyByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'An assembly has been replaced' });
+  io.emit("dataUpdated", { message: "An assembly has been replaced" });
 });
-
 // DELETE ASSEMBLY BY ID FROM ASSEMBLY TABLE
 app.delete("/api/deleteAssembly/:id", (req, res) => {
   deleteAssemblyByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: 'An assembly has been deleted' });
+  io.emit("dataUpdated", { message: "An assembly has been deleted" });
 });
-
 // GET ASSEMBLY BY PROJECT FK FROM ASSEMBLY TABLE
 app.get("/api/assembly/project/:id", (req, res) => {
   getAssemblyByProjectFK(req, res);
@@ -511,27 +462,22 @@ app.get("/api/getItems/name/:name", (req, res) => {
 app.get("/api/getItems/name/:name/project/:project_id", (req, res) => {
   getItemsByNameAndProjectID(req, res);
 });
-///////////////////////////////////////////////////////////////// SUBASSEMBLY TABLE
 // POST NEW SUBASSEMBLY
 app.post("/api/postSubassembly", (req, res) => {
   postSubassembly(req, res);
 });
-
 // PATCH SUBASSEMBLY BY ID
 app.patch("/api/patchSubassembly/:id", (req, res) => {
   patchSubassembly(req, res);
 });
-
 // GET SUBASSEMBLY BY ASSEMBLY ID
 app.get("/api/subassembly/assembly/:id", (req, res) => {
   getSubassemblyByAssembly(req, res);
 });
-
 // GET ITEMS BY SUBASSEMBLY ID
 app.get("/api/subassembly/items/:id", (req, res) => {
   getSubassemblyItems(req, res);
 });
-
 // GET SUBASSEMBLY BY ID
 app.get("/api/subassembly/:id", (req, res) => {
   getSubassemblyById(req, res);
@@ -540,8 +486,6 @@ app.get("/api/subassembly/:id", (req, res) => {
 app.get("/api/subassembly", (req, res) => {
   getSubassembly(req, res);
 });
-///////////////////////////////////////////////////////////////// BOM TABLE
-
 // GET BOM BY ID FROM BOM TABLE
 app.get("/api/items/:projectId", async (req, res) => {
   try {
@@ -573,9 +517,6 @@ app.get("/projects/:projectId/assemblies/:assemblyId/items", (req, res) => {
 app.get("/api/users/name/:name", (req, res) => {
   getStockByName(req, res);
 });
-
-///////////////////////////////////////////////////////////////// ITEMS TABLE
-
 // GET ALL ITEMS FOR TESTING PURPOSES
 app.get("/api/getItems", (req, res) => {
   getAllItems(req, res);
@@ -591,35 +532,27 @@ app.get("/api/getItemsByDateOrder", (req, res) => {
 // POST NEW ITEM TO ITEMS TABLE
 app.post("/api/postItem", (req, res) => {
   postItem(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: '🚨 A new item has been added! 🚨' });
+  io.emit("dataUpdated", { message: "🚨 A new item has been added! 🚨" });
 });
-
 // PATCH ITEM BY ID FROM ITEMS TABLE
 app.patch("/api/patchItem/:id", (req, res) => {
   patchItemByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: '🔧 An item has been updated! 🔧' });
+  io.emit("dataUpdated", { message: "🔧 An item has been updated! 🔧" });
 });
-
 // PUT ITEM BY ID FROM ITEMS TABLE
 app.put("/api/putItem/:id", (req, res) => {
   putItemByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: '⚡ An item has been replaced! ⚡' });
+  io.emit("dataUpdated", { message: "⚡ An item has been replaced! ⚡" });
 });
-
 // DELETE ITEM BY ID FROM ITEMS TABLE
 app.delete("/api/deleteItem/:id", (req, res) => {
   deleteItemByID(req, res);
-
   // Emit notification event to all connected clients
-  io.emit('dataUpdated', { message: '❌ An item has been removed! ❌' });
+  io.emit("dataUpdated", { message: "❌ An item has been removed! ❌" });
 });
-
 // GET ITEMS BY PROJECT FK FROM ITEMS TABLE AND PROJECT TABLE JOIN
 app.get("/api/getItems/project/:id", (req, res) => {
   getItemsByProjectFK(req, res);
@@ -647,14 +580,10 @@ app.get("/api/getItems/arrived", (req, res) => {
 app.get("/api/getItems/missing", (req, res) => {
   getItemsMissing(req, res);
 });
-
 // GET ITEMS BY ASSEMBLY ID
 app.get("/api/getItems/assembly/:id", (req, res) => {
   getItemsByAssemblyID(req, res);
 });
-
-/////////////////////////////////////////////////////////////////// STOCK TABLE
-
 // GET ITEMS BY STOCK
 app.get("/api/getAllStockk", (req, res) => {
   getAllStockk(req, res);
@@ -679,8 +608,6 @@ app.put("/api/putStock/:id", (req, res) => {
 app.delete("/api/deleteStock/:id", (req, res) => {
   deleteStockByID(req, res);
 });
-//////////////////////////////////////////////////////////////////// Stock_items
-
 // Endpoint para obtener items con su stock
 app.get("/api/items-with-stock", async (req, res) => {
   try {
@@ -690,23 +617,18 @@ app.get("/api/items-with-stock", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 // Endpoint para crear un nuevo item con relación a stock
 app.post("/api/items-create", (req, res) => {
   createItemWithStock(req, res);
 });
-
 // En el controlador o en el archivo de rutas
 app.patch("/items/:item_id", (req, res) => {
   updateItemWithStock(req, res);
 });
-
 // Ruta para actualizar el stock buscando por nombre de ítem
 app.patch("/api/stock/update", updateStockByItemName);
-
 // Agrega este endpoint en tu archivo de rutas
 app.patch("/api/items/:itemId/stock", updateItemStock);
-
 // delete item stock
 app.delete("/api/items/:itemId/stock", (req, res) => {
   deleteItemStock(req, res);
@@ -716,17 +638,14 @@ app.delete("/api/stock/:itemId", (req, res) => {
   deleteStockByItemId(req, res);
 });
 
-/////////////////////////////////////////////////////////////////// START SERVER
-
-// Sincronizar la base de datos y arrancar el servidor
-sequelize.sync()
+sequelize
+  .sync()
   .then(() => {
     server.listen(3002, () => {
-      console.log('Servidor corriendo en puerto 3002');
+      console.log("Servidor corriendo en puerto 3002");
     });
   })
   .catch((error) => {
-    console.error('Error al sincronizar la base de datos', error);
+    console.error("Error al sincronizar la base de datos", error);
   });
-
-module.exports = app; // Export the app for testing
+module.exports = app;

@@ -1,6 +1,4 @@
-//import the database connection
 const db = require("../config/database");
-// names of the tables
 const Items = db.items;
 const Assembly = db.assembly;
 const Subassembly = db.subassembly;
@@ -287,7 +285,6 @@ const getItemsMissing = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 // GET ITEMS BY ASSEMBLY only when the assembly have null in the subassembly_id
 const getItemsByOnlyAssembly = async (req, res) => {
   try {
@@ -359,8 +356,6 @@ const getItemsByAssemblyID = async (req, res) => {
     res.status(500).send("Server error");
   }
 }
-
-
 
 module.exports = {
   getAllItems,

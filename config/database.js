@@ -1,11 +1,11 @@
-// Export a Sequelize instance and models
-const { Sequelize } = require("sequelize");
+const { Sequelize } = require("sequelize");  // Export a Sequelize instance and models
+const config = require('./config.json').development;  
 
 // Replace the connection string with your database configuration
-const sequelize = new Sequelize("mmc", "root", "4Sep&&2OO3GL", {
-  dialect: "mysql",
-  host: "localhost", // Replace with your database host if different
-  port:3307
+const sequelize = new Sequelize(config.database, config.username, config.password, {
+  dialect: config.dialect,
+  host: config.host, // Replace with your database host if different
+  port: config.port
 });
 
 // Test the connection
@@ -18,12 +18,11 @@ const sequelize = new Sequelize("mmc", "root", "4Sep&&2OO3GL", {
   }
 })();
 
-// Create a database object
-const db = {};
+const db = {};  // Create a database object
 
 // Add Sequelize instance to the database object
-db.sequelize = sequelize; //access to the library
-db.sequelize = Sequelize; //acces to the instance
+db.sequelize = sequelize; // Export Sequelize instance
+db.Sequelize = Sequelize; // Export Sequelize library
 
 // Import models
 db.user_type = require("../models/user_type.model.js")(sequelize, Sequelize);
@@ -53,15 +52,11 @@ db.bom.belongsTo(db.assembly, { foreignKey: "assembly_id" });
 db.bom.belongsTo(db.items, { foreignKey: "item_id" });
 db.bom.belongsTo(db.stock_items, { foreignKey: "stock_items_id" });
 
-db.items.hasMany(db.stock_items, { foreignKey: "item_id" }); // One-to-Many relationship??
-
-
+db.items.hasMany(db.stock_items, { foreignKey: "item_id" });
 db.users.hasMany(db.users_projects, { foreignKey: 'users_id' });
 db.projects.hasMany(db.users_projects, { foreignKey: 'project_id' });
 db.users_projects.belongsTo(db.projects, { foreignKey: 'project_id' });
-db.users.hasMany(db.users_projects, { foreignKey: "users_id" }); // Un usuario puede tener muchos proyectos a través de users_projects
-db.projects.hasMany(db.users_projects, { foreignKey: "project_id" }); // Un proyecto puede tener muchos usuarios a través de users_projects
+db.users.hasMany(db.users_projects, { foreignKey: "users_id" });
+db.projects.hasMany(db.users_projects, { foreignKey: "project_id" });
 
-
-//export db
-module.exports = db;
+module.exports = db;  // Export db

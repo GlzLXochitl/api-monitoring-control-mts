@@ -20,6 +20,7 @@ The project uses the following dependencies:
 - `mariadb`: Client to connect to MariaDB databases.
 - `sequelize`: ORM (Object-Relational Mapping) for Node.js.
 - `nodemon`: Tool to automatically restart the application when file changes are detected.
+- `mysql`: Client to connect to MySQL databases.
 
 ## Installation
 
@@ -40,37 +41,39 @@ Follow these steps to set up and run the project in your local environment:
 
 3. Configure the database:
 
-   - Create a database in MariaDB.
-   - Update the `config/database.js` file with your database credentials.
+   - Create a database by running the script `db_yaskawa_MMC.sql` located in the `database` folder.
+   - Update the `config/config.json` file with your database credentials.
 
-   ```javascript
-
-   const sequelize = new Sequelize(
-     "nombre_base_datos",
-     "usuario",
-     "contraseña",
-     {
-        dialect: "mariadb",
-        host: "localhost",
+   ```json
+   {
+     "development": {
+       "username": "username",
+       "password": "password",
+       "database": "name_database",
+       "host": "localhost",
+       "dialect": "mariadb",
+       "port": "port"
      }
-   );
-
+   }
    ```
 
-4. Execute the seeds to configure the database:
+4. Set up environment variables:
+
+   - Create a `.env` file in the root directory of the project.
+   - Add the `CLIENT_IP_ADDRESS` variable to the `.env` file with the IP address of the client that will make requests to the database.
+
+   ```env
+   CLIENT_IP_ADDRESS=your_client_ip_address
+   ```
+
+5. Execute the seeds to configure the database:
 
    ```sh
    # Execute all seeds
    npx sequelize-cli db:seed:all
    ```
 
-   If you need to revert the seeds, you can do it with the following command:
-
-   ```sh
-   npx sequelize-cli db:seed:undo
-   ```
-
-5. Start the server in development mode:
+6. Start the server in development mode:
 
    ```sh
    npm run dev
@@ -80,4 +83,4 @@ Follow these steps to set up and run the project in your local environment:
 
 ## Use
 
-Once the server is up and running, you can access the application at `http://localhost:3000` (or whatever port you have configured).
+Once the server is up and running, you can access the application at `http://localhost:3002` (or whatever port you have configured).

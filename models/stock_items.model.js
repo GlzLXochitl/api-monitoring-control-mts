@@ -1,5 +1,5 @@
 //foreign keys
-const items = require("./items.model.js"); 
+const items = require("./items.model.js");
 const stock = require("./stock.model.js");
 
 module.exports = (sequelize, Sequelize) => {

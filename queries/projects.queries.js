@@ -1,6 +1,4 @@
-// import the database connection
 const db = require("../config/database");
-//import the table
 const Projects = db.projects;
 const UsersProjects = db.users_projects;
 const Assembly = db.assembly;

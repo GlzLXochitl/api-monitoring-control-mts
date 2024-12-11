@@ -1,5 +1,5 @@
 //foreign key
-const assembly = require("./assembly.model.js"); 
+const assembly = require("./assembly.model.js");
 
 module.exports = (sequelize, Sequelize) => {
   const Subassembly = sequelize.define(

@@ -1,10 +1,8 @@
-//import the database connection
 const db = require("../config/database");
-const Projects = require('../models/projects.model'); // Ajusta la ruta según sea necesario
-
-// names of the tables
+const Projects = require('../models/projects.model'); 
 const Users = db.users;
-// 1. GET USERS WITH PROJECTS ASOCIATED
+
+// GET USERS WITH ASSOCIATED PROJECTS
 const getUsersProjects = async () => {
   try {
     const usersProjects = await db.users_projects.findAll({
@@ -17,20 +15,21 @@ const getUsersProjects = async () => {
     throw error;
   }
 };
-// 2. DELETE ASOCIATED PROJECTS SPECIFIC
+
+// DELETE SPECIFIC ASSOCIATED PROJECT
 const removeSpecificProjectForUser = async (userId, projectId) => {
   try {
-    // if exist is true
+    // Check if the user exists
     const user = await db.users.findByPk(userId);
     if (!user) {
       throw new Error("User not found");
     }
-    // if exist is true
+    // Check if the project exists
     const project = await db.projects.findByPk(projectId);
     if (!project) {
       throw new Error("Project not found");
     }
-    // delete the association
+    // Delete the association
     const resultado = await db.users_projects.destroy({
       where: {
         users_id: userId,
@@ -38,23 +37,24 @@ const removeSpecificProjectForUser = async (userId, projectId) => {
       },
     });
     if (resultado === 0) {
-      throw new Error("Not found asociations for delete");
+      throw new Error("No associations found to delete");
     }
     return resultado;
   } catch (error) {
-    console.error("Error for delete", error);
+    console.error("Error deleting association", error);
     throw error;
   }
 };
-// 3. REMOVE ALL PROJECTS FOR USER
+
+// REMOVE ALL PROJECTS FOR USER
 const removeAllProjectsForUser = async (userId) => {
   try {
     // Check if the user exists
     const user = await db.users.findByPk(userId);
     if (!user) {
-      throw new Error("Users not found");
+      throw new Error("User not found");
     }
-    // Performs the removal of all associations for the user
+    // Perform the removal of all associations for the user
     const resultado = await db.users_projects.destroy({
       where: {
         users_id: userId,
@@ -69,7 +69,8 @@ const removeAllProjectsForUser = async (userId) => {
     throw error;
   }
 };
-// 4. GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
+
+// GET USERS ASSOCIATED WITH A SPECIFIC PROJECT
 const getUsersByProject = async (project_id) => {
   try {
     const adminsProjects = await db.users_projects.findAll({
@@ -99,7 +100,8 @@ const getUsersByProject = async (project_id) => {
     throw error;
   }
 };
-// 5. GET USERS BY PROJECT AND WHO ARE ADMINS
+
+// GET USERS BY PROJECT AND WHO ARE ADMINS
 const getAdminsByProject = async (project_id) => {
   try {
     const adminsProjects = await db.users_projects.findAll({
@@ -129,7 +131,8 @@ const getAdminsByProject = async (project_id) => {
     throw error;
   }
 };
-// 5. GET USERS BY PROJECT AND WHO ARE OPERS
+
+// GET USERS BY PROJECT AND WHO ARE OPERATORS
 const getOpersByProject = async (project_id) => {
   try {
     const adminsProjects = await db.users_projects.findAll({
@@ -159,7 +162,8 @@ const getOpersByProject = async (project_id) => {
     throw error;
   }
 };
-// 6. ASSIGN USER TO PROJECT
+
+// ASSIGN USER TO PROJECT
 const assignUserToProject = async (req, res) => {
   try {
     const userProjectData = req.body;
@@ -171,17 +175,18 @@ const assignUserToProject = async (req, res) => {
   }
 };
 
+// GET PROJECTS BY USER ID
 const getProjectsByUserId = async (userId) => {
   try {
-    // Obtener los proyectos relacionados con un usuario utilizando la tabla intermedia users_projects
+    // Get the projects related to a user using the intermediate table users_projects
     const userProjects = await db.users_projects.findAll({
       where: {
-        users_id: userId,  // Aquí buscamos por el ID del usuario
+        users_id: userId,  // Search by user ID
       },
       include: [
         {
-          model: db.projects,  // Incluir los proyectos relacionados
-          as: 'project',  // Relación definida en users_projects
+          model: db.projects,  // Include related projects
+          as: 'project',  // Relation defined in users_projects
           attributes: [
             'id',
             'identification_number',
@@ -191,7 +196,7 @@ const getProjectsByUserId = async (userId) => {
             'description',
             'created_at',
             'updated_at',
-          ],  // Especificar los atributos que deseas traer
+          ],  // Specify the attributes you want to bring
         },
       ],
     });
@@ -201,9 +206,6 @@ const getProjectsByUserId = async (userId) => {
     throw new Error('Error retrieving projects for the user: ' + error.message);
   }
 };
-
-
-
 
 module.exports = {
   getUsersProjects,

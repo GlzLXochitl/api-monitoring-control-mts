@@ -1,6 +1,4 @@
-//import the database connection
 const db = require("../config/database");
-// names of the tables
 const Users = db.users;
 
 // GET ALL USERS FROM USERS
@@ -128,7 +126,6 @@ const getUsersByUserType = async (user_type_id) => {
     throw error;
   }
 };
-
 
 module.exports = {
   getAllUsers,

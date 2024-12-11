@@ -1,6 +1,4 @@
-//import the database connection
 const db = require("../config/database");
-// names of the tables
 const UserType = db.user_type;
 
 // GET ALL USER TYPES

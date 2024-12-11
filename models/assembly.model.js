@@ -1,4 +1,4 @@
-//foreign key
+// foreign key
 const projects = require("./projects.model.js");
 
 module.exports = (sequelize, Sequelize) => {

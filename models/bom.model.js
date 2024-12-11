@@ -1,10 +1,10 @@
 //foreign keys
 const projects = require("./projects.model.js");
-const assembly = require("./assembly.model.js"); 
-const subassembly = require("./subassembly.model.js"); 
+const assembly = require("./assembly.model.js");
+const subassembly = require("./subassembly.model.js");
 const items = require("./items.model.js");
 const stockItems = require("./stock_items.model.js");
-  
+
 module.exports = (sequelize, Sequelize) => {
   const Bom = sequelize.define(
     "bom",
@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
           key: "id",
         },
       },
-      assembly_id: { 
+      assembly_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -30,7 +30,7 @@ module.exports = (sequelize, Sequelize) => {
           key: "id",
         },
       },
-      subassembly_id: { 
+      subassembly_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {

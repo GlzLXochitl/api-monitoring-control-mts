@@ -1,38 +1,42 @@
 module.exports = (sequelize, Sequelize) => {
-  const UsersProjects = sequelize.define('users_projects', {
-    users_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id',
+  const UsersProjects = sequelize.define(
+    "users_projects",
+    {
+      users_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE", // If a user is deleted, the relationships are deleted
       },
-      onDelete: 'CASCADE', // Si se elimina un usuario, se eliminan las relaciones
-    },
-    project_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'projects',
-        key: 'id',
+      project_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "projects",
+          key: "id",
+        },
+        onDelete: "CASCADE", // If a project is deleted, the relationships are deleted
       },
-      onDelete: 'CASCADE', // Si se elimina un proyecto, se eliminan las relaciones
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
     },
-    created_at: {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.NOW,
-    },
-    updated_at: {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.NOW,
-    },
-  }, {
-    tableName: 'users_projects',
-    timestamps: false,
-    freezeTableName: true,
-  });
+    {
+      tableName: "users_projects",
+      timestamps: false,
+      freezeTableName: true,
+    }
+  );
 
   return UsersProjects;
 };

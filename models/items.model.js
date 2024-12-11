@@ -1,6 +1,6 @@
 // foreing key
 const assembly = require("./assembly.model.js");
-const subassembly = require("./subassembly.model.js");   
+const subassembly = require("./subassembly.model.js");
 const projects = require("./projects.model.js");
 
 module.exports = (sequelize, Sequelize) => {

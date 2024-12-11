@@ -1,6 +1,4 @@
-// import the database connection
 const db = require("../config/database");
-// names of the tables
 const Assembly = db.assembly;
 const Items = db.items;
 

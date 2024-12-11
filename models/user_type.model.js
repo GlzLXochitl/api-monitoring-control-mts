@@ -1,6 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
-    const UserType = sequelize.define
-    ('user_type', {
+  const UserType = sequelize.define(
+    "user_type",
+    {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -19,14 +20,13 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.NOW,
-      }
-    },     
-      {
-        timestamps: false,    
-        freezeTableName: true,
-        tableName: "user_type",
-      }
-    );
-    return UserType;
-  }; 
-  
+      },
+    },
+    {
+      timestamps: false,
+      freezeTableName: true,
+      tableName: "user_type",
+    }
+  );
+  return UserType;
+};

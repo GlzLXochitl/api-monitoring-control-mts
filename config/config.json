@@ -1,25 +1,10 @@
 {
     "development": {
-      "username": "root",
-      "password": "4Sep&&2OO3GL",
-      "database": "mmc",
-      "host": "localhost",
-      "dialect": "mysql",
-      "port": "3307"
-    },
-    "test": {
-      "username": "root",
-      "password": "",
-      "database": "mmc_test",
-      "host": "localhost",
-      "dialect": "mariadb"
-    },
-    "production": {
-      "username": "root",
-      "password": "",
-      "database": "mmc_production",
-      "host": "localhost",
-      "dialect": "mariadb"
+        "username": "root",
+        "password": "4Sep&&2OO3GL",
+        "database": "mmc",
+        "host": "localhost",
+        "dialect": "mysql",
+        "port": "3307"
     }
-  }
-  
+}
